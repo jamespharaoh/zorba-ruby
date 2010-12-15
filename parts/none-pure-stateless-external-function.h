@@ -72,11 +72,12 @@ String NonePureStatelessExternalFunctionWrapper::getURI () const {
 }
 
 ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
-		const Arguments_t& arguments_real,
-		const StaticContext* staticContext_real,
-		const DynamicContext* dynamicContext_real) const {
+		const Arguments_t & arguments_real,
+		const StaticContext * staticContext_real,
+		const DynamicContext * dynamicContext_real) const {
 
-	VALUE staticContext = StaticContext_wrap (staticContext_real);
+	// TODO maintain constness in ruby
+	VALUE staticContext = StaticContext_wrap ((StaticContext *) staticContext_real);
 
 	VALUE itemSequence = zr_funcall (
 		shadow,

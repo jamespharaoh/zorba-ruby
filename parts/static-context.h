@@ -19,9 +19,45 @@
 
 #ifdef INTERFACE_PART
 
-void StaticContext_mark (StaticContext_t * staticContext);
-void StaticContext_delete (StaticContext_t * staticContext);
-VALUE StaticContext_wrap (const StaticContext*);
+template <class T>
+class SmartishPtr {
+
+	SmartPtr <T> smart;
+	T * stupid;
+
+public:
+
+	SmartishPtr (T * value) :
+		smart (NULL),
+		stupid (value) {
+	}
+
+	SmartishPtr (SmartPtr <T> & value) :
+		smart (value),
+		stupid (NULL) {
+	}
+
+	T & operator * () const {
+		return * (stupid ? stupid : smart);
+	}
+
+	T * operator -> () const {
+		return stupid ? stupid : smart.get ();
+	}
+
+	bool is_smart () const {
+		return stupid ? false : true;
+	}
+
+	bool is_stupid () const {
+		return stupid ? true : false;
+	}
+};
+
+void StaticContext_mark (SmartishPtr <StaticContext> * staticContext);
+void StaticContext_delete (SmartishPtr <StaticContext> * staticContext);
+VALUE StaticContext_wrap (StaticContext *);
+VALUE StaticContext_wrap (StaticContext_t &);
 
 #endif
 #ifdef RUBY_PART
@@ -34,46 +70,59 @@ ZR_CLASS_METHOD (StaticContext, register_module, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void StaticContext_delete (StaticContext_t *staticContext) {
-	delete staticContext;
+void StaticContext_delete (SmartishPtr <StaticContext> * staticContext_real) {
+	delete staticContext_real;
 }
 
-void StaticContext_mark (StaticContext_t *staticContext) {
+void StaticContext_mark (SmartishPtr <StaticContext> * staticContext_real) {
 	// TODO
 	cout << "STATIC CONTEXT MARK TODO!\n";
 }
 
-VALUE StaticContext_wrap (const StaticContext * staticContext_real) {
+VALUE StaticContext_wrap (StaticContext * staticContext_orig) {
 
-	VALUE staticContext = Data_Wrap_Struct (
+	auto_ptr <SmartishPtr <StaticContext> > staticContext_real (
+		new SmartishPtr <StaticContext> (staticContext_orig));
+
+	return Data_Wrap_Struct (
 		cStaticContext,
-		0,
-		0,
-		(void *) staticContext_real);
+		StaticContext_mark,
+		StaticContext_delete,
+		staticContext_real.release ());
+}
 
-	return staticContext;
+VALUE StaticContext_wrap (StaticContext_t & staticContext_orig) {
+
+	auto_ptr <SmartishPtr <StaticContext> > staticContext_real (
+		new SmartishPtr <StaticContext> (staticContext_orig));
+
+	return Data_Wrap_Struct (
+		cStaticContext,
+		StaticContext_mark,
+		StaticContext_delete,
+		staticContext_real.release ());
 }
 
 VALUE StaticContext_add_module_uri_resolver (VALUE self, VALUE moduleUriResolver) {
 
-	ZR_REAL (StaticContext_t, self);
+	ZR_REAL (SmartishPtr <StaticContext>, self);
 
-	ModuleUriResolverWrapper *moduleUriResolver_real =
+	ModuleUriResolverWrapper * moduleUriResolver_real =
 		new ModuleUriResolverWrapper (moduleUriResolver);
 
-	(*self_real)->addModuleURIResolver (moduleUriResolver_real);
+	(* self_real)->addModuleURIResolver (moduleUriResolver_real);
 
 	return Qnil;
 }
 
 VALUE StaticContext_register_module (VALUE self, VALUE module) {
 
-	ZR_REAL (StaticContext_t, self);
+	ZR_REAL (SmartishPtr <StaticContext>, self);
 
-	ExternalModuleWrapper *module_real =
+	ExternalModuleWrapper * module_real =
 		new ExternalModuleWrapper (module);
 
-	(*self_real)->registerModule (module_real);
+	(* self_real)->registerModule (module_real);
 
 	return Qnil;
 }
