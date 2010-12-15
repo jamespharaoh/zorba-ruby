@@ -56,8 +56,7 @@ VALUE StaticContext_wrap (const StaticContext * staticContext_real) {
 
 VALUE StaticContext_add_module_uri_resolver (VALUE self, VALUE moduleUriResolver) {
 
-	StaticContext_t *self_real;
-	Data_Get_Struct (self, StaticContext_t, self_real);
+	ZR_REAL (StaticContext_t, self);
 
 	ModuleUriResolverWrapper *moduleUriResolver_real =
 		new ModuleUriResolverWrapper (moduleUriResolver);
@@ -69,8 +68,7 @@ VALUE StaticContext_add_module_uri_resolver (VALUE self, VALUE moduleUriResolver
 
 VALUE StaticContext_register_module (VALUE self, VALUE module) {
 
-	StaticContext_t *self_real;
-	Data_Get_Struct (self, StaticContext_t, self_real);
+	ZR_REAL (StaticContext_t, self);
 
 	ExternalModuleWrapper *module_real =
 		new ExternalModuleWrapper (module);

@@ -36,13 +36,9 @@ ZR_CLASS_METHOD (Zorba, get_xml_data_manager, 0)
 
 VALUE Zorba_compile_query (VALUE self, VALUE query, VALUE staticContext) {
 
-	Zorba * self_real;
-	Data_Get_Struct (self, Zorba, self_real);
-
+	ZR_REAL (Zorba, self);
 	String query_string (RSTRING (query)->ptr);
-
-	StaticContext_t * staticContext_real;
-	Data_Get_Struct (staticContext, StaticContext_t, staticContext_real);
+	ZR_REAL (StaticContext_t, staticContext);
 
 	XQuery_t * xquery_real = new XQuery_t ();
 	* xquery_real = self_real->compileQuery (query_string, * staticContext_real);
@@ -53,11 +49,11 @@ VALUE Zorba_compile_query (VALUE self, VALUE query, VALUE staticContext) {
 
 VALUE Zorba_create_static_context (VALUE self) {
 
-	Zorba * self_real;
-	Data_Get_Struct (self, Zorba, self_real);
+	ZR_REAL (Zorba, self);
 
 	StaticContext_t * staticContext_real = new StaticContext_t ();
 	* staticContext_real = self_real->createStaticContext ();
+
 	VALUE staticContext = Data_Wrap_Struct (
 		cStaticContext,
 		StaticContext_mark,
@@ -69,8 +65,7 @@ VALUE Zorba_create_static_context (VALUE self) {
 
 VALUE Zorba_get_instance (VALUE self, VALUE store) {
 
-	void * store_real;
-	Data_Get_Struct (store, void, store_real);
+	ZR_REAL (void, store);
 
 	Zorba * zorba_real = Zorba::getInstance (store_real);
 
@@ -79,8 +74,7 @@ VALUE Zorba_get_instance (VALUE self, VALUE store) {
 
 VALUE Zorba_get_item_factory (VALUE self) {
 
-	Zorba * self_real;
-	Data_Get_Struct (self, Zorba, self_real);
+	ZR_REAL (Zorba, self);
 
 	ItemFactory * itemFactory_real = self_real->getItemFactory ();
 
@@ -89,8 +83,7 @@ VALUE Zorba_get_item_factory (VALUE self) {
 
 VALUE Zorba_get_xml_data_manager (VALUE self) {
 
-	Zorba * self_real;
-	Data_Get_Struct (self, Zorba, self_real);
+	ZR_REAL (Zorba, self);
 
 	XmlDataManager * xml_data_manager_real = self_real->getXmlDataManager ();
 

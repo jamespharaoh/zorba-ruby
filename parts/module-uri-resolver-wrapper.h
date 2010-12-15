@@ -57,9 +57,7 @@ auto_ptr<ModuleURIResolverResult> ModuleUriResolverWrapper::resolveTargetNamespa
 		rb_str_new2 (targetNamespaceURI.c_str ()));
 
 	VALUE shadow = rb_iv_get (ret, "@shadow");
-
-	ModuleURIResolverResult *shadow_real;
-	Data_Get_Struct (shadow, ModuleURIResolverResult, shadow_real);
+	ZR_REAL (ModuleURIResolverResult, shadow);
 
 	return auto_ptr<ModuleURIResolverResult> (shadow_real);
 }
@@ -75,9 +73,7 @@ auto_ptr<ModuleURIResolverResult> ModuleUriResolverWrapper::resolve (
 		rb_str_new2 (uri.c_str ()));
 
 	VALUE shadow = rb_iv_get (ret, "@shadow");
-
-	ModuleURIResolverResult *shadow_real;
-	Data_Get_Struct (shadow, ModuleURIResolverResult, shadow_real);
+	ZR_REAL (ModuleURIResolverResult, shadow);
 
 	return auto_ptr<ModuleURIResolverResult> (shadow_real);
 }

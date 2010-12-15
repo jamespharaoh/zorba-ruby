@@ -32,6 +32,10 @@
 #include <zorba/xquery.h>
 #include <zorba/zorba.h>
 
+#define ZR_REAL(type, name) \
+	type * name##_real; \
+	Data_Get_Struct (name, type, name##_real)
+
 using namespace std;
 using namespace zorba;
 

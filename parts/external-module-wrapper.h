@@ -51,9 +51,7 @@ StatelessExternalFunction* ExternalModuleWrapper::getExternalFunction (String lo
 		rb_str_new2 (localName.c_str ()));
 
 	VALUE shadow = rb_iv_get (ret, "@shadow");
-
-	StatelessExternalFunction *shadow_real;
-	Data_Get_Struct (shadow, StatelessExternalFunction, shadow_real);
+	ZR_REAL (StatelessExternalFunction, shadow);
 
 	return shadow_real;
 }

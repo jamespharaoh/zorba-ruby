@@ -47,8 +47,7 @@ VALUE ItemFactory_wrap (const ItemFactory * itemFactory_real) {
 
 Item Item_get (VALUE item) {
 	if (! RTEST (item)) return Item ();
-	Item * item_real;
-	Data_Get_Struct (item, Item, item_real);
+	ZR_REAL (Item, item);
 	return * item_real;
 }
 
@@ -61,8 +60,7 @@ VALUE ItemFactory_create_element_node (
 		VALUE hasEmptyValue,
 		VALUE nsBindings) {
 
-	ItemFactory * self_real;
-	Data_Get_Struct (self, ItemFactory, self_real);
+	ZR_REAL (ItemFactory, self);
 
 	Item parent_real = Item_get (parent);
 
@@ -81,8 +79,7 @@ VALUE ItemFactory_create_element_node (
 
 VALUE ItemFactory_create_integer (VALUE self, VALUE integer) {
 
-	ItemFactory * self_real;
-	Data_Get_Struct (self, ItemFactory, self_real);
+	ZR_REAL (ItemFactory, self);
 
 	Item * item_real = new Item ();
 	* item_real = self_real->createInteger (NUM2ULONG (integer));
@@ -93,8 +90,7 @@ VALUE ItemFactory_create_integer (VALUE self, VALUE integer) {
 
 VALUE ItemFactory_create_qname (VALUE self, VALUE ns, VALUE localName) {
 
-	ItemFactory * self_real;
-	Data_Get_Struct (self, ItemFactory, self_real);
+	ZR_REAL (ItemFactory, self);
 
 	Item * item_real = new Item ();
 	* item_real = self_real->createQName (RSTRING (ns)->ptr, RSTRING (localName)->ptr);
@@ -105,8 +101,7 @@ VALUE ItemFactory_create_qname (VALUE self, VALUE ns, VALUE localName) {
 
 VALUE ItemFactory_create_string (VALUE self, VALUE str) {
 
-	ItemFactory * self_real;
-	Data_Get_Struct (self, ItemFactory, self_real);
+	ZR_REAL (ItemFactory, self);
 
 	Item * item_real = new Item ();
 	* item_real = self_real->createString (RSTRING (str)->ptr);

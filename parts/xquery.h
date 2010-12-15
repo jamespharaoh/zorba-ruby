@@ -37,8 +37,7 @@ void xqueryDelete (XQuery_t * xquery) {
 
 VALUE XQuery_execute (VALUE self) {
 
-	XQuery_t *self_real;
-	Data_Get_Struct (self, XQuery_t, self_real);
+	ZR_REAL (XQuery_t, self);
 
 	basic_ostringstream<char> out;
 

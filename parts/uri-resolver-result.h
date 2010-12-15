@@ -44,9 +44,7 @@ ZR_CLASS_CONST (UriResolverResult, UR_XQST0088, INT2NUM (URIResolverResult::UR_X
 VALUE UriResolverResult_error_eq (VALUE self, VALUE error) {
 
 	VALUE shadow = rb_iv_get (self, "@shadow");
-
-	URIResolverResult *shadow_real;
-	Data_Get_Struct (shadow, URIResolverResult, shadow_real);
+	ZR_REAL (URIResolverResult, shadow);
 
 	shadow_real->setError ((URIResolverResult::ErrorCode) NUM2INT (error));
 }

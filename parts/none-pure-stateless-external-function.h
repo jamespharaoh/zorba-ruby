@@ -86,8 +86,7 @@ ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
 		staticContext,
 		Qnil);
 
-	ItemSequence_t * itemSequence_real;
-	Data_Get_Struct (itemSequence, ItemSequence_t, itemSequence_real);
+	ZR_REAL (ItemSequence_t, itemSequence);
 
 	return * itemSequence_real;
 }

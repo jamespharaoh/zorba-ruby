@@ -31,8 +31,7 @@ ZR_CLASS_SINGLETON_METHOD (SingletonItemSequence, new, 1);
 
 VALUE SingletonItemSequence_new (VALUE self, VALUE item) {
 
-	Item * item_real;
-	Data_Get_Struct (item, Item, item_real);
+	ZR_REAL (Item, item);
 
 	ItemSequence_t * itemSequence_real = new ItemSequence_t ();
 	* itemSequence_real = auto_ptr<ItemSequence> (new SingletonItemSequence (* item_real));
