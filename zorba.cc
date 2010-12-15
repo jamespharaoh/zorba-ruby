@@ -173,34 +173,45 @@ VALUE mStoreManager_get_store (VALUE self) {
 #define ZR_CLASS_CLASS(under, name, parent)
 #define ZR_CLASS_CONST(klass, name, args)
 
-#define ZR_WRAP_INVOKE_0(name, self, argv) \
+#define ZR_WRAP_INVOKE_VAR_C(name, self, argc, argv) \
+	return name (argc, argv, self)
+
+#define ZR_WRAP_INVOKE_0(name, self, argc, argv) \
+	if (argc != 0) rb_raise (rb_eArgError, "Expected 0 arguments, got %d", argc); \
 	return name (self)
 
-#define ZR_WRAP_INVOKE_1(name, self, argv) \
+#define ZR_WRAP_INVOKE_1(name, self, argc, argv) \
+	if (argc != 1) rb_raise (rb_eArgError, "Expected 1 arguments, got %d", argc); \
 	return name (self, argv[0])
 
-#define ZR_WRAP_INVOKE_2(name, self, argv) \
+#define ZR_WRAP_INVOKE_2(name, self, argc, argv) \
+	if (argc != 2) rb_raise (rb_eArgError, "Expected 2 arguments, got %d", argc); \
 	return name (self, argv[0], argv[1])
 
-#define ZR_WRAP_INVOKE_3(name, self, argv) \
+#define ZR_WRAP_INVOKE_3(name, self, argc, argv) \
+	if (argc != 3) rb_raise (rb_eArgError, "Expected 3 arguments, got %d", argc); \
 	return name (self, argv[0], argv[1], argv[2])
 
-#define ZR_WRAP_INVOKE_4(name, self, argv) \
+#define ZR_WRAP_INVOKE_4(name, self, argc, argv) \
+	if (argc != 4) rb_raise (rb_eArgError, "Expected 4 arguments, got %d", argc); \
 	return name (self, argv[0], argv[1], argv[2], argv[3])
 
-#define ZR_WRAP_INVOKE_5(name, self, argv) \
+#define ZR_WRAP_INVOKE_5(name, self, argc, argv) \
+	if (argc != 5) rb_raise (rb_eArgError, "Expected 5 arguments, got %d", argc); \
 	return name (self, argv[0], argv[1], argv[2], argv[3], argv[4])
 
-#define ZR_WRAP_INVOKE_6(name, self, argv) \
+#define ZR_WRAP_INVOKE_6(name, self, argc, argv) \
+	if (argc != 6) rb_raise (rb_eArgError, "Expected 6 arguments, got %d", argc); \
 	return name (self, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5])
 
-#define ZR_WRAP_INVOKE_7(name, self, argv) \
+#define ZR_WRAP_INVOKE_7(name, self, argc, argv) \
+	if (argc != 7) rb_raise (rb_eArgError, "Expected 7 arguments, got %d", argc); \
 	return name (self, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6])
 
 #define ZR_CLASS_METHOD(klass, name, args) \
 	VALUE klass##_##name##_wrap (int argc, VALUE *argv, VALUE self) { \
 		try { \
-			ZR_WRAP_INVOKE_##args (klass##_##name, self, argv); \
+			ZR_WRAP_INVOKE_##args (klass##_##name, self, argc, argv); \
 		} \
 		catch (ZorbaException & e) { raise (e); } \
 		catch (RubyException & e) { raise (e); } \
@@ -209,7 +220,7 @@ VALUE mStoreManager_get_store (VALUE self) {
 #define ZR_CLASS_SINGLETON_METHOD(klass, name, args) \
 	VALUE klass##_##name##_wrap (int argc, VALUE *argv, VALUE self) { \
 		try { \
-			ZR_WRAP_INVOKE_##args (klass##_##name, self, argv); \
+			ZR_WRAP_INVOKE_##args (klass##_##name, self, argc, argv); \
 		} \
 		catch (ZorbaException & e) { raise (e); } \
 		catch (RubyException & e) { raise (e); } \
