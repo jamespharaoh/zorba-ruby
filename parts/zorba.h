@@ -25,6 +25,7 @@
 ZR_CLASS (Zorba, rb_cObject)
 
 ZR_CLASS_SINGLETON_METHOD (Zorba, get_instance, 1)
+ZR_CLASS_SINGLETON_METHOD (Zorba, version, 0)
 
 ZR_CLASS_METHOD (Zorba, compile_query, VAR_C)
 ZR_CLASS_METHOD (Zorba, create_static_context, 0)
@@ -98,6 +99,15 @@ VALUE Zorba_get_item_factory (VALUE self) {
 	ItemFactory * itemFactory_real = self_real->getItemFactory ();
 
 	return Data_Wrap_Struct (cItemFactory, 0, 0, itemFactory_real);
+}
+
+VALUE Zorba_version (VALUE self) {
+
+	auto_ptr <Version> version_real (new Version ());
+
+	* version_real = Zorba::version ();
+
+	return Version_wrap (version_real.release ());
 }
 
 VALUE Zorba_get_xml_data_manager (VALUE self) {

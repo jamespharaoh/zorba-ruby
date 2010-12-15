@@ -28,6 +28,7 @@
 #include "parts/singleton-item-sequence.h"
 #include "parts/static-context.h"
 #include "parts/uri-resolver-result.h"
+#include "parts/version.h"
 #include "parts/xquery.h"
 #include "parts/zorba-exception.h"
 
