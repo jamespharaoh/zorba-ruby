@@ -27,6 +27,7 @@ void xqueryDelete (XQuery_t *);
 ZR_CLASS_CLASS (Zorba, XQuery, rb_cObject)
 
 ZR_CLASS_METHOD (XQuery, execute, 0)
+ZR_CLASS_METHOD (XQuery, iterator, 0)
 
 #endif
 #ifdef IMPLEMENTATION_PART
@@ -44,6 +45,18 @@ VALUE XQuery_execute (VALUE self) {
 	(*self_real)->execute (out);
 
 	return rb_str_new2 (out.str ().c_str ());
+}
+
+VALUE XQuery_iterator (VALUE self) {
+
+	ZR_REAL (XQuery_t, self);
+
+	auto_ptr <Iterator_t> iterator_real (new Iterator_t ());
+
+	* iterator_real = (* self_real)->iterator ();
+	VALUE iterator = Iterator_wrap (iterator_real.release ());
+
+	return iterator;
 }
 
 #endif

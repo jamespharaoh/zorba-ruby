@@ -20,17 +20,43 @@
 #ifdef INTERFACE_PART
 
 void Item_delete (Item *);
+void Item_mark (Item *);
+VALUE Item_wrap (Item *);
 
 #endif
 #ifdef RUBY_PART
 
 ZR_CLASS_CLASS (Zorba, Item, rb_cObject)
 
+ZR_CLASS_METHOD (Item, string_value, 0)
+
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void Item_delete (Item * item) {
-	delete item;
+void Item_delete (Item * item_real) {
+	delete item_real;
+}
+
+void Item_mark (Item * item_real) {
+	// do nothing
+}
+
+VALUE Item_wrap (Item * item_real) {
+
+	return Data_Wrap_Struct (
+		cItem,
+		Item_mark,
+		Item_delete,
+		(void *) item_real);
+}
+
+VALUE Item_string_value (VALUE self) {
+
+	ZR_REAL (Item, self);
+
+	String string = self_real->getStringValue ();
+
+	return rb_str_new2 (string.c_str ());
 }
 
 #endif
