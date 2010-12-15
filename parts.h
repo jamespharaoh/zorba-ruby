@@ -29,5 +29,6 @@
 #include "parts/static-context.h"
 #include "parts/uri-resolver-result.h"
 #include "parts/xquery.h"
+#include "parts/zorba-exception.h"
 
 #include "parts/module-uri-resolver-result.h"

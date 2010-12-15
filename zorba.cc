@@ -47,30 +47,11 @@ using namespace zorba;
 VALUE cStore;
 VALUE mStoreManager;
 VALUE cXmlDataManager;
-VALUE eZorbaException;
 
 VALUE currentException = Qnil;
 
 class RubyException : public exception {
 };
-
-void raise (const ZorbaException & zorbaException) {
-
-	if (RTEST (currentException)) {
-		VALUE currentExceptionTemp = currentException;
-		currentException = Qnil;
-		rb_exc_raise (currentExceptionTemp);
-	}
-
-	rb_raise (eZorbaException, "[%s] %s",
-		ZorbaException::getErrorCodeAsString (zorbaException.getErrorCode ()).c_str (),
-		zorbaException.getDescription ().c_str ());
-}
-
-void raise (const RubyException & rubyException) {
-	cout << "got ruby exception\n";
-	exit (0);
-}
 
 const char * zr_map_method_name (const char * name) {
 	static char * pointer = NULL;
@@ -144,6 +125,9 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 #define ZR_CLASS_CLASS(under, name, parent) \
 	VALUE c##name;
 
+#define ZR_CLASS_EXCEP(under, name, parent) \
+	VALUE e##name;
+
 #define ZR_CLASS_CONST(klass, name, args)
 #define ZR_CLASS_METHOD(klass, name, args)
 #define ZR_CLASS_SINGLETON_METHOD(klass, name, args)
@@ -155,10 +139,11 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 #undef ZR_CLASS
 #undef ZR_CLASS_CLASS
 #undef ZR_CLASS_CONST
+#undef ZR_CLASS_EXCEP
 #undef ZR_CLASS_METHOD
 #undef ZR_CLASS_SINGLETON_METHOD
 
-// --------------------
+// -------------------- implementation
 
 #define IMPLEMENTATION_PART
 #include "parts.h"
@@ -177,6 +162,7 @@ VALUE mStoreManager_get_store (VALUE self) {
 #define ZR_CLASS(name, parent)
 #define ZR_CLASS_CLASS(under, name, parent)
 #define ZR_CLASS_CONST(klass, name, args)
+#define ZR_CLASS_EXCEP(under, name, parent)
 
 #define ZR_WRAP_INVOKE_VAR_C(name, self, argc, argv) \
 	return name (argc, argv, self)
@@ -218,8 +204,8 @@ VALUE mStoreManager_get_store (VALUE self) {
 		try { \
 			ZR_WRAP_INVOKE_##args (klass##_##name, self, argc, argv); \
 		} \
-		catch (ZorbaException & e) { raise (e); } \
-		catch (RubyException & e) { raise (e); } \
+		catch (ZorbaException & e) { zr_raise (e); } \
+		catch (RubyException & e) { zr_raise (e); } \
 	}
 
 #define ZR_CLASS_SINGLETON_METHOD(klass, name, args) \
@@ -227,8 +213,8 @@ VALUE mStoreManager_get_store (VALUE self) {
 		try { \
 			ZR_WRAP_INVOKE_##args (klass##_##name, self, argc, argv); \
 		} \
-		catch (ZorbaException & e) { raise (e); } \
-		catch (RubyException & e) { raise (e); } \
+		catch (ZorbaException & e) { zr_raise (e); } \
+		catch (RubyException & e) { zr_raise (e); } \
 	}
 
 #include "parts.h"
@@ -238,6 +224,7 @@ VALUE mStoreManager_get_store (VALUE self) {
 #undef ZR_CLASS
 #undef ZR_CLASS_CLASS
 #undef ZR_CLASS_CONST
+#undef ZR_CLASS_EXCEP
 #undef ZR_CLASS_METHOD
 #undef ZR_CLASS_SINGLETON_METHOD
 
@@ -273,6 +260,9 @@ void Init_zorba () {
 #define ZR_CLASS_CONST(klass, name, value) \
 	rb_define_const (c##klass, #name, value);
 
+#define ZR_CLASS_EXCEP(under, name, parent) \
+	e##name = rb_define_class_under (c##under, #name, parent);
+
 #define ZR_CLASS_METHOD(klass, name, args) \
 	rb_define_method (c##klass, zr_map_method_name (#name), RUBY_METHOD_FUNC (klass##_##name##_wrap), -1);
 
@@ -286,6 +276,7 @@ void Init_zorba () {
 #undef ZR_CLASS
 #undef ZR_CLASS_CLASS
 #undef ZR_CLASS_CONST
+#undef ZR_CLASS_EXCEP
 #undef ZR_CLASS_METHOD
 #undef ZR_CLASS_SINGLETON_METHOD
 
@@ -297,7 +288,5 @@ void Init_zorba () {
 	rb_define_singleton_method (mStoreManager, "get_store", RUBY_METHOD_FUNC (mStoreManager_get_store), 0);
 
 	cXmlDataManager = rb_define_class_under (cZorba, "XmlDataManager", rb_cObject);
-
-	eZorbaException = rb_define_class ("ZorbaException", rb_eException);
 
 }
