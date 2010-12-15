@@ -1,0 +1,6 @@
+- handle ruby exceptions properly
+- memory management, garbage collection
+- lots of missing functionality
+- translate c++ examples to ruby and get working
+- unit tests
+- documentation

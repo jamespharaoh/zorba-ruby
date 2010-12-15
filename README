@@ -1,0 +1,53 @@
+zorba-ruby/README
+
+Copyright 2010 James Pharaoh <james@phsys.co.uk>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+--- INFORMATION
+
+This is a (somewhat incomplete) native Ruby API interface to the C++ XQuery
+library Zorba. It was written to meet the requirement of another project when
+the only interface I could find was the very basic SWIG interface included in
+the project.
+
+I'm releasing it in the hope it will be useful to other people. If there is
+interest then I'm happy to let it mature into a release quality product. If not
+I'll just keep it up to date with whatever I need for my project.
+
+Please let me know if you use this project for anything.
+
+Thanks,
+
+James Pharaoh
+james@phsys.co.uk
+
+--- BUILD INSTRUCTIONS
+
+* Install the ruby module development requirements. On debian this is provided
+  by the ruby-dev package, or similar.
+
+* Install zorba. I built this from source - http://www.zorba-xquery.com/.
+
+* Run "ruby extconf.rb", the exact command I run is: 
+  "ruby extconf.rb --with-zorba-include=/usr/local/include/zorba"
+
+* Run "make".
+
+* Require "zorba" in your ruby program. You'll either need to make sure
+  zorba.so is in your ruby library path or use the full path name (minus the
+  .so extension).
+
+* Check out test.rb, my basic test script, for some basic examples.
+
+Please let me know if you have any problems.
