@@ -31,7 +31,7 @@ public:
 
 	virtual std::istream* getModuleStream () const {
 
-		VALUE ret = rb_funcall (
+		VALUE ret = zr_funcall (
 			shadow,
 			rb_intern ("module_source"),
 			0);
@@ -44,7 +44,7 @@ public:
 
 	virtual void getModuleURL (string& moduleUrl) const {
 
-		VALUE ret = rb_funcall (
+		VALUE ret = zr_funcall (
 			shadow,
 			rb_intern ("module_url"),
 			0);
@@ -54,7 +54,7 @@ public:
 
 	virtual void getComponentURIs (vector<string>& componentUris) const {
 
-		VALUE ret = rb_funcall (
+		VALUE ret = zr_funcall (
 			shadow,
 			rb_intern ("component_uris"),
 			0);

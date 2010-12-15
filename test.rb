@@ -44,14 +44,12 @@ end
 class ModuleUriResolver
 
 	def resolve_target_namespace target_namespace_uri
-puts "resolve namespace #{target_namespace_uri}"
 		result = MyModuleUriResolverResult.new
 		result.component_uris = [ target_namespace_uri ]
 		return result
 	end
 
 	def resolve name
-puts "resolve #{name}"
 		result = MyModuleUriResolverResult.new
 		case name
 		when "lib"
@@ -68,7 +66,6 @@ end
 class MyModule
 
 	def uri
-puts "uri"
 		return "lib"
 	end
 
@@ -121,10 +118,9 @@ sctx = $zorba.create_static_context
 sctx.add_module_uri_resolver ModuleUriResolver.new
 sctx.register_module MyModule.new
 
-xquery = $zorba.compile_query MAIN, sctx
-pp xquery.execute
-
-xquery = $zorba.compile_query MAIN, sctx
-pp xquery.execute
+(ARGV[0] ||= 1).to_i.times do
+	xquery = $zorba.compile_query MAIN, sctx
+	puts xquery.execute
+end
 
 exit

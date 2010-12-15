@@ -17,6 +17,7 @@
  *
  */
 
+#include <cstdarg>
 #include <exception>
 #include <iostream>
 #include <sstream>
@@ -39,10 +40,27 @@ VALUE mStoreManager;
 VALUE cXmlDataManager;
 VALUE eZorbaException;
 
+VALUE currentException = Qnil;
+
+class RubyException : public exception {
+};
+
 void raise (const ZorbaException & zorbaException) {
+
+	if (RTEST (currentException)) {
+		VALUE currentExceptionTemp = currentException;
+		currentException = Qnil;
+		rb_exc_raise (currentExceptionTemp);
+	}
+
 	rb_raise (eZorbaException, "[%s] %s",
 		ZorbaException::getErrorCodeAsString (zorbaException.getErrorCode ()).c_str (),
 		zorbaException.getDescription ().c_str ());
+}
+
+void raise (const RubyException & rubyException) {
+	cout << "got ruby exception\n";
+	exit (0);
 }
 
 const char * zr_map_method_name (const char * name) {
@@ -62,6 +80,45 @@ const char * zr_map_method_name (const char * name) {
 	}
 
 	return pointer;
+}
+
+VALUE zr_funcall_nest (VALUE args) {
+	return rb_apply (
+		rb_ary_entry (args, 0),
+		rb_ary_entry (args, 1),
+		rb_ary_entry (args, 2));
+}
+
+VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
+
+	va_list ap;
+	int i;
+
+	VALUE args1 = rb_ary_new2 (argc);
+
+	va_start (ap, argc);
+	for (int i = 0; i < argc; i++) {
+		VALUE arg = va_arg (ap, VALUE);
+		rb_ary_store (args1, i, arg);
+	}
+	va_end (ap);
+
+	VALUE args2 =
+		rb_ary_new3 (3,
+			self,
+			name,
+			args1);
+
+	int result;
+	VALUE ret = rb_protect (&zr_funcall_nest, args2, &result);
+
+	if (result) {
+		currentException = rb_gv_get ("$!");
+		cout << "excep: " << currentException << endl;
+		throw new RubyException ();
+	}
+
+	return ret;
 }
 
 #define INTERFACE_PART
@@ -140,14 +197,18 @@ VALUE mStoreManager_get_store (VALUE self) {
 	VALUE klass##_##name##_wrap (int argc, VALUE *argv, VALUE self) { \
 		try { \
 			ZR_WRAP_INVOKE_##args (klass##_##name, self, argv); \
-		} catch (ZorbaException & e) { raise (e); } \
+		} \
+		catch (ZorbaException & e) { raise (e); } \
+		catch (RubyException & e) { raise (e); } \
 	}
 
 #define ZR_CLASS_SINGLETON_METHOD(klass, name, args) \
 	VALUE klass##_##name##_wrap (int argc, VALUE *argv, VALUE self) { \
 		try { \
 			ZR_WRAP_INVOKE_##args (klass##_##name, self, argv); \
-		} catch (ZorbaException & e) { raise (e); } \
+		} \
+		catch (ZorbaException & e) { raise (e); } \
+		catch (RubyException & e) { raise (e); } \
 	}
 
 #include "parts.h"

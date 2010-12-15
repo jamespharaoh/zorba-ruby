@@ -50,7 +50,7 @@ auto_ptr<ModuleURIResolverResult> ModuleUriResolverWrapper::resolveTargetNamespa
 		const String& targetNamespaceURI,
 		const StaticContext& staticContext) {
 
-	VALUE ret = rb_funcall (
+	VALUE ret = zr_funcall (
 		value,
 		rb_intern ("resolve_target_namespace"),
 		1,
@@ -68,7 +68,7 @@ auto_ptr<ModuleURIResolverResult> ModuleUriResolverWrapper::resolve (
 		const String& uri,
 		const StaticContext& staticContext) {
 
-	VALUE ret = rb_funcall (
+	VALUE ret = zr_funcall (
 		value,
 		rb_intern ("resolve"),
 		1,

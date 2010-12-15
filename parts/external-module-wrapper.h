@@ -44,7 +44,7 @@ public:
 
 StatelessExternalFunction* ExternalModuleWrapper::getExternalFunction (String localName) const {
 
-	VALUE ret = rb_funcall (
+	VALUE ret = zr_funcall (
 		value,
 		rb_intern ("external_function"),
 		1,
@@ -60,7 +60,7 @@ StatelessExternalFunction* ExternalModuleWrapper::getExternalFunction (String lo
 
 String ExternalModuleWrapper::getURI () const {
 
-	VALUE ret = rb_funcall (
+	VALUE ret = zr_funcall (
 		value,
 		rb_intern ("uri"),
 		0);

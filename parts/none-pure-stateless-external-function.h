@@ -78,7 +78,7 @@ ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
 
 	VALUE staticContext = StaticContext_wrap (staticContext_real);
 
-	VALUE itemSequence = rb_funcall (
+	VALUE itemSequence = zr_funcall (
 		shadow,
 		rb_intern ("evaluate"),
 		3,
