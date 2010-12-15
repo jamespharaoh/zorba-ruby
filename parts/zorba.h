@@ -26,7 +26,7 @@ ZR_CLASS (Zorba, rb_cObject)
 
 ZR_CLASS_SINGLETON_METHOD (Zorba, get_instance, 1)
 
-ZR_CLASS_METHOD (Zorba, compile_query, 2)
+ZR_CLASS_METHOD (Zorba, compile_query, VAR_C)
 ZR_CLASS_METHOD (Zorba, create_static_context, 0)
 ZR_CLASS_METHOD (Zorba, get_item_factory, 0)
 ZR_CLASS_METHOD (Zorba, get_xml_data_manager, 0)
@@ -34,16 +34,35 @@ ZR_CLASS_METHOD (Zorba, get_xml_data_manager, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE Zorba_compile_query (VALUE self, VALUE query, VALUE staticContext) {
+VALUE Zorba_compile_query (int argc, VALUE * argv, VALUE self) {
+
+	VALUE query, staticContext;
+	switch (argc) {
+	case 1:
+		query = argv[0];
+		staticContext = Qnil;
+		break;
+	case 2:
+		query = argv[0];
+		staticContext = argv[1];
+		break;
+	default:
+		rb_raise (rb_eArgError, "Expected 1 or 2 args, got %d", argc);
+	}
 
 	ZR_REAL (Zorba, self);
 	String query_string (RSTRING (query)->ptr);
-	ZR_REAL (StaticContext_t, staticContext);
+	ZR_REAL_OPT (StaticContext_t, staticContext);
 
 	XQuery_t * xquery_real = new XQuery_t ();
-	* xquery_real = self_real->compileQuery (query_string, * staticContext_real);
-	VALUE xquery = Data_Wrap_Struct (cXQuery, 0, xqueryDelete, xquery_real);
 
+	if (staticContext_real) {
+		* xquery_real = self_real->compileQuery (query_string, * staticContext_real);
+	} else {
+		* xquery_real = self_real->compileQuery (query_string);
+	}
+
+	VALUE xquery = Data_Wrap_Struct (cXQuery, 0, xqueryDelete, xquery_real);
 	return xquery;
 }
 

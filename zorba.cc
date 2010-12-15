@@ -36,6 +36,11 @@
 	type * name##_real; \
 	Data_Get_Struct (name, type, name##_real)
 
+#define ZR_REAL_OPT(type, name) \
+	type * name##_real; \
+	if (name == Qnil) name##_real = NULL; \
+	else Data_Get_Struct (name, type, name##_real)
+
 using namespace std;
 using namespace zorba;
 
@@ -236,6 +241,7 @@ VALUE mStoreManager_get_store (VALUE self) {
 #undef ZR_CLASS_METHOD
 #undef ZR_CLASS_SINGLETON_METHOD
 
+#undef ZR_CLASS_INVOKE_VAR_C
 #undef ZR_CLASS_INVOKE_0
 #undef ZR_CLASS_INVOKE_1
 #undef ZR_CLASS_INVOKE_2
