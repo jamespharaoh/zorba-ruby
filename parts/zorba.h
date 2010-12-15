@@ -28,6 +28,7 @@ ZR_CLASS_SINGLETON_METHOD (Zorba, get_instance, 1)
 ZR_CLASS_SINGLETON_METHOD (Zorba, version, 0)
 
 ZR_CLASS_METHOD (Zorba, compile_query, VAR_C)
+ZR_CLASS_METHOD (Zorba, create_query, 0)
 ZR_CLASS_METHOD (Zorba, create_static_context, 0)
 ZR_CLASS_METHOD (Zorba, get_item_factory, 0)
 ZR_CLASS_METHOD (Zorba, get_xml_data_manager, 0)
@@ -55,7 +56,7 @@ VALUE Zorba_compile_query (int argc, VALUE * argv, VALUE self) {
 	String query_string (RSTRING (query)->ptr);
 	ZR_REAL_OPT (StaticContext_t, staticContext);
 
-	XQuery_t * xquery_real = new XQuery_t ();
+	auto_ptr <XQuery_t> xquery_real (new XQuery_t ());
 
 	if (staticContext_real) {
 		* xquery_real = self_real->compileQuery (query_string, * staticContext_real);
@@ -63,8 +64,17 @@ VALUE Zorba_compile_query (int argc, VALUE * argv, VALUE self) {
 		* xquery_real = self_real->compileQuery (query_string);
 	}
 
-	VALUE xquery = Data_Wrap_Struct (cXQuery, 0, xqueryDelete, xquery_real);
-	return xquery;
+	return XQuery_wrap (xquery_real.release ());
+}
+
+VALUE Zorba_create_query (VALUE self) {
+
+	ZR_REAL (Zorba, self);
+
+	auto_ptr <XQuery_t> xquery_real (new XQuery_t ());
+	* xquery_real = self_real->createQuery ();
+
+	return XQuery_wrap (xquery_real.release ());
 }
 
 VALUE Zorba_create_static_context (VALUE self) {

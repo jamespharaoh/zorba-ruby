@@ -19,21 +19,47 @@
 
 #ifdef INTERFACE_PART
 
-void xqueryDelete (XQuery_t *);
+void XQuery_delete (XQuery_t *);
+void XQuery_mark (XQuery_t *);
+VALUE XQuery_wrap (XQuery_t *);
 
 #endif
 #ifdef RUBY_PART
 
 ZR_CLASS_CLASS (Zorba, XQuery, rb_cObject)
 
+ZR_CLASS_METHOD (XQuery, compile, 1)
 ZR_CLASS_METHOD (XQuery, execute, 0)
 ZR_CLASS_METHOD (XQuery, iterator, 0)
+ZR_CLASS_METHOD (XQuery, filename_eq, 1)
 
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void xqueryDelete (XQuery_t * xquery) {
-	delete xquery;
+void XQuery_delete (XQuery_t * xquery_real) {
+	delete xquery_real;
+}
+
+void XQuery_mark (XQuery_t * xquery_real) {
+	// do nothing
+}
+
+VALUE XQuery_wrap (XQuery_t * xquery_real) {
+
+	return Data_Wrap_Struct (
+		cXQuery,
+		XQuery_mark,
+		XQuery_delete,
+		(void *) xquery_real);
+}
+
+VALUE XQuery_compile (VALUE self, VALUE query) {
+
+	ZR_REAL (XQuery_t, self);
+
+	(* self_real)->compile (StringValueCStr (query));
+
+	return Qnil;
 }
 
 VALUE XQuery_execute (VALUE self) {
@@ -57,6 +83,15 @@ VALUE XQuery_iterator (VALUE self) {
 	VALUE iterator = Iterator_wrap (iterator_real.release ());
 
 	return iterator;
+}
+
+VALUE XQuery_filename_eq (VALUE self, VALUE value) {
+
+	ZR_REAL (XQuery_t, self);
+
+	(* self_real)->setFileName (StringValueCStr (value));
+
+	return Qnil;
 }
 
 #endif
