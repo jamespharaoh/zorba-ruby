@@ -19,45 +19,30 @@
 
 #ifdef INTERFACE_PART
 
-template <class T>
-class SmartishPtr {
+class StaticContext {
 
-	zorba::SmartPtr <T> smart;
-	T * stupid;
+	static map <zorba::StaticContext *, StaticContext *> instances;
+
+	zorba::StaticContext * zorbaValue;
+
+	VALUE rubyValue;
+
+	StaticContext () { }
 
 public:
 
-	SmartishPtr (T * value) :
-		smart (NULL),
-		stupid (value) {
-	}
+	~StaticContext ();
 
-	SmartishPtr (zorba::SmartPtr <T> & value) :
-		smart (value),
-		stupid (NULL) {
-	}
+	zorba::StaticContext * zorba () { return zorbaValue; }
 
-	T & operator * () const {
-		return * (stupid ? stupid : smart);
-	}
+	VALUE ruby () { return rubyValue; }
 
-	T * operator -> () const {
-		return stupid ? stupid : smart.get ();
-	}
+	static void mark (StaticContext *);
 
-	bool is_smart () const {
-		return stupid ? false : true;
-	}
+	static void del (StaticContext *);
 
-	bool is_stupid () const {
-		return stupid ? true : false;
-	}
+	static StaticContext * wrap (zorba::StaticContext *);
 };
-
-void StaticContext_mark (SmartishPtr <zorba::StaticContext> * staticContext);
-void StaticContext_delete (SmartishPtr <zorba::StaticContext> * staticContext);
-VALUE StaticContext_wrap (zorba::StaticContext *);
-VALUE StaticContext_wrap (zorba::StaticContext_t &);
 
 #endif
 #ifdef RUBY_PART
@@ -70,61 +55,57 @@ ZR_CLASS_METHOD (StaticContext, register_module, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void StaticContext_delete (SmartishPtr <zorba::StaticContext> * staticContext_real) {
-	delete staticContext_real;
-}
-
-void StaticContext_mark (SmartishPtr <zorba::StaticContext> * staticContext_real) {
-	// TODO
-	cout << "STATIC CONTEXT MARK TODO!\n";
-}
-
-VALUE StaticContext_wrap (zorba::StaticContext * staticContext_orig) {
-
-	auto_ptr <SmartishPtr <zorba::StaticContext> > staticContext_real (
-		new SmartishPtr <zorba::StaticContext> (staticContext_orig));
-
-	return Data_Wrap_Struct (
-		cStaticContext,
-		StaticContext_mark,
-		StaticContext_delete,
-		staticContext_real.release ());
-}
-
-VALUE StaticContext_wrap (zorba::StaticContext_t & staticContext_orig) {
-
-	auto_ptr <SmartishPtr <zorba::StaticContext> > staticContext_real (
-		new SmartishPtr <zorba::StaticContext> (staticContext_orig));
-
-	return Data_Wrap_Struct (
-		cStaticContext,
-		StaticContext_mark,
-		StaticContext_delete,
-		staticContext_real.release ());
-}
+map <zorba::StaticContext *, StaticContext *> StaticContext::instances;
 
 VALUE StaticContext_add_module_uri_resolver (VALUE self, VALUE moduleUriResolver) {
 
-	ZR_REAL (SmartishPtr <zorba::StaticContext>, self);
+	ZR_REAL (StaticContext, self);
 
 	ModuleUriResolverWrapper * moduleUriResolver_real =
 		new ModuleUriResolverWrapper (moduleUriResolver);
 
-	(* self_real)->addModuleURIResolver (moduleUriResolver_real);
+	self_real->zorba ()->addModuleURIResolver (moduleUriResolver_real);
 
 	return Qnil;
 }
 
 VALUE StaticContext_register_module (VALUE self, VALUE module) {
 
-	ZR_REAL (SmartishPtr <zorba::StaticContext>, self);
+	ZR_REAL (StaticContext, self);
 
 	ExternalModuleWrapper * module_real =
 		new ExternalModuleWrapper (module);
 
-	(* self_real)->registerModule (module_real);
+	self_real->zorba ()->registerModule (module_real);
 
 	return Qnil;
+}
+
+void StaticContext::del (StaticContext * staticContext) {
+	delete staticContext;
+}
+
+void StaticContext::mark (StaticContext * staticContext) {
+}
+
+StaticContext * StaticContext::wrap (zorba::StaticContext * staticContext_zorba) {
+
+	if (instances.count (staticContext_zorba))
+		return instances [staticContext_zorba];
+
+	StaticContext * staticContext = new StaticContext ();
+
+	staticContext->zorbaValue = staticContext_zorba;
+
+	staticContext->rubyValue = Data_Wrap_Struct (
+		cStaticContext,
+		StaticContext::mark,
+		StaticContext::wrap,
+		staticContext);
+
+	instances [staticContext_zorba] = staticContext;
+
+	return staticContext;
 }
 
 #endif

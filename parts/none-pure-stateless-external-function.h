@@ -76,18 +76,19 @@ zorba::String NonePureStatelessExternalFunctionWrapper::getURI () const {
 
 zorba::ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
 		const Arguments_t & arguments_real,
-		const zorba::StaticContext * staticContext_real,
+		const zorba::StaticContext * staticContext_zorba,
 		const zorba::DynamicContext * dynamicContext_real) const {
 
 	// TODO maintain constness in ruby
-	VALUE staticContext = StaticContext_wrap ((zorba::StaticContext *) staticContext_real);
+	StaticContext * staticContext = StaticContext::wrap (
+		(zorba::StaticContext *) staticContext_zorba);
 
 	VALUE itemSequence = zr_funcall (
 		shadow,
 		rb_intern ("evaluate"),
 		3,
 		Qnil,
-		staticContext,
+		staticContext->ruby (),
 		Qnil);
 
 	ZR_REAL (zorba::ItemSequence_t, itemSequence);

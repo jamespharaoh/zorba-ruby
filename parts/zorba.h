@@ -81,16 +81,11 @@ VALUE Zorba_create_static_context (VALUE self) {
 
 	ZR_REAL (zorba::Zorba, self);
 
-	zorba::StaticContext_t * staticContext_real = new zorba::StaticContext_t ();
-	* staticContext_real = self_real->createStaticContext ();
+	zorba::StaticContext_t staticContext_zorba = self_real->createStaticContext ();
 
-	VALUE staticContext = Data_Wrap_Struct (
-		cStaticContext,
-		StaticContext_mark,
-		StaticContext_delete,
-		staticContext_real);
+	StaticContext * staticContext = StaticContext::wrap (staticContext_zorba);
 
-	return staticContext;
+	return staticContext->ruby ();
 }
 
 VALUE Zorba_get_instance (VALUE self, VALUE store) {

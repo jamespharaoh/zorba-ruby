@@ -95,6 +95,4 @@ ZrDynamicContext * ZrDynamicContext::wrap (zorba::DynamicContext * dynamicContex
 	return dynamicContext;
 }
 
-static map <zorba::DynamicContext *, ZrDynamicContext *> instances;
-
 #endif
