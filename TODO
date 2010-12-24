@@ -5,3 +5,14 @@
 - unit tests
 - documentation
 - ruby gem
+
+MEMORY MANAGEMENT
+- is hard
+- some callbacks pass ownership: use delegate
+- is the api reentrant, eg what should be prevented from a callback
+- destruction order
+- mark and sweep
+- priorities:
+  - work like c api
+  - work like a ruby api
+  - protect against anything dumb
