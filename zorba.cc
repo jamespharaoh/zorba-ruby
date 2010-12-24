@@ -20,10 +20,12 @@
 #include <cstdarg>
 #include <exception>
 #include <iostream>
+#include <map>
 #include <sstream>
 
 #include <ruby.h>
 
+#include <zorba/dynamic_context.h>
 #include <zorba/external_function.h>
 #include <zorba/external_module.h>
 #include <zorba/singleton_item_sequence.h>

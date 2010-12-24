@@ -28,7 +28,9 @@ VALUE XQuery_wrap (XQuery_t *);
 
 ZR_CLASS_CLASS (Zorba, XQuery, rb_cObject)
 
+ZR_CLASS_METHOD (XQuery, clone, 0)
 ZR_CLASS_METHOD (XQuery, compile, 1)
+ZR_CLASS_METHOD (XQuery, dynamic_context, 0)
 ZR_CLASS_METHOD (XQuery, execute, 0)
 ZR_CLASS_METHOD (XQuery, iterator, 0)
 ZR_CLASS_METHOD (XQuery, filename_eq, 1)
@@ -53,6 +55,17 @@ VALUE XQuery_wrap (XQuery_t * xquery_real) {
 		(void *) xquery_real);
 }
 
+VALUE XQuery_clone (VALUE self) {
+
+	ZR_REAL (XQuery_t, self);
+
+	XQuery_t * cloned_real = new XQuery_t ();
+
+	* cloned_real = (* self_real)->clone ();
+
+	return XQuery_wrap (cloned_real);
+}
+
 VALUE XQuery_compile (VALUE self, VALUE query) {
 
 	ZR_REAL (XQuery_t, self);
@@ -60,6 +73,17 @@ VALUE XQuery_compile (VALUE self, VALUE query) {
 	(* self_real)->compile (StringValueCStr (query));
 
 	return Qnil;
+}
+
+VALUE XQuery_dynamic_context (VALUE self) {
+
+	ZR_REAL (XQuery_t, self);
+
+	DynamicContext * dynamicContext_zorba = (* self_real)->getDynamicContext ();
+
+	ZrDynamicContext * dynamicContext = ZrDynamicContext::wrap (dynamicContext_zorba);
+
+	return dynamicContext->ruby ();
 }
 
 VALUE XQuery_execute (VALUE self) {

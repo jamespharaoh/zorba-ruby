@@ -30,8 +30,8 @@ ZR_CLASS_SINGLETON_METHOD (Zorba, version, 0)
 ZR_CLASS_METHOD (Zorba, compile_query, VAR_C)
 ZR_CLASS_METHOD (Zorba, create_query, 0)
 ZR_CLASS_METHOD (Zorba, create_static_context, 0)
-ZR_CLASS_METHOD (Zorba, get_item_factory, 0)
-ZR_CLASS_METHOD (Zorba, get_xml_data_manager, 0)
+ZR_CLASS_METHOD (Zorba, item_factory, 0)
+ZR_CLASS_METHOD (Zorba, xml_data_manager, 0)
 
 #endif
 #ifdef IMPLEMENTATION_PART
@@ -102,7 +102,7 @@ VALUE Zorba_get_instance (VALUE self, VALUE store) {
 	return Data_Wrap_Struct (cZorba, 0, 0, zorba_real);
 }
 
-VALUE Zorba_get_item_factory (VALUE self) {
+VALUE Zorba_item_factory (VALUE self) {
 
 	ZR_REAL (Zorba, self);
 
@@ -120,7 +120,7 @@ VALUE Zorba_version (VALUE self) {
 	return Version_wrap (version_real.release ());
 }
 
-VALUE Zorba_get_xml_data_manager (VALUE self) {
+VALUE Zorba_xml_data_manager (VALUE self) {
 
 	ZR_REAL (Zorba, self);
 
