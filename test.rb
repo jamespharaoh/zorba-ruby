@@ -111,8 +111,8 @@ end
 
 $store = Zorba::StoreManager.get_store
 $zorba = Zorba.get_instance $store
-$data_manager = $zorba.get_xml_data_manager
-$item_factory = $zorba.get_item_factory
+$data_manager = $zorba.xml_data_manager
+$item_factory = $zorba.item_factory
 
 sctx = $zorba.create_static_context
 sctx.add_module_uri_resolver ModuleUriResolver.new
