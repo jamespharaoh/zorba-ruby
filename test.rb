@@ -41,7 +41,7 @@ class MyModuleUriResolverResult < Zorba::ModuleUriResolverResult
 	attr_accessor :component_uris
 end
 
-class ModuleUriResolver
+class ModuleUriResolver < Zorba::ModuleUriResolver
 
 	def resolve_target_namespace target_namespace_uri
 		result = MyModuleUriResolverResult.new

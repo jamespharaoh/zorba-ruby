@@ -49,7 +49,7 @@ public:
 
 ZR_CLASS_CLASS (Zorba, NonePureStatelessExternalFunction, rb_cObject)
 
-ZR_CLASS_METHOD (NonePureStatelessExternalFunction, initialize, 0);
+ZR_CLASS_METHOD (NonePureStatelessExternalFunction, initialize, 0)
 
 #endif
 #ifdef IMPLEMENTATION_PART

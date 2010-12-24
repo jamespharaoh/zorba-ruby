@@ -24,7 +24,7 @@
 #include "parts/item.h"
 #include "parts/item-factory.h"
 #include "parts/iterator.h"
-#include "parts/module-uri-resolver-wrapper.h"
+#include "parts/module-uri-resolver.h"
 #include "parts/none-pure-stateless-external-function.h"
 #include "parts/singleton-item-sequence.h"
 #include "parts/static-context.h"
