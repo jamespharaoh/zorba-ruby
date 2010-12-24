@@ -19,7 +19,7 @@
 
 #ifdef INTERFACE_PART
 
-class NonePureStatelessExternalFunctionWrapper : public NonePureStatelessExternalFunction {
+class NonePureStatelessExternalFunctionWrapper : public zorba::NonePureStatelessExternalFunction {
 
 	VALUE shadow;
 
@@ -34,11 +34,14 @@ public:
 		exit (0);
 	}
 
-	virtual String getLocalName () const;
+	virtual zorba::String getLocalName () const;
 
-	virtual String getURI () const;
+	virtual zorba::String getURI () const;
 
-	virtual ItemSequence_t evaluate (const Arguments_t &, const StaticContext *, const DynamicContext *) const;
+	virtual zorba::ItemSequence_t evaluate (
+		const Arguments_t &,
+		const zorba::StaticContext *,
+		const zorba::DynamicContext *) const;
 };
 
 #endif
@@ -61,23 +64,23 @@ VALUE NonePureStatelessExternalFunction_initialize (VALUE self) {
 	return self;
 }
 
-String NonePureStatelessExternalFunctionWrapper::getLocalName () const {
+zorba::String NonePureStatelessExternalFunctionWrapper::getLocalName () const {
 	cout << "w0\n";
 	exit (0);
 }
 
-String NonePureStatelessExternalFunctionWrapper::getURI () const {
+zorba::String NonePureStatelessExternalFunctionWrapper::getURI () const {
 	cout << "w1\n";
 	exit (0);
 }
 
-ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
+zorba::ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
 		const Arguments_t & arguments_real,
-		const StaticContext * staticContext_real,
-		const DynamicContext * dynamicContext_real) const {
+		const zorba::StaticContext * staticContext_real,
+		const zorba::DynamicContext * dynamicContext_real) const {
 
 	// TODO maintain constness in ruby
-	VALUE staticContext = StaticContext_wrap ((StaticContext *) staticContext_real);
+	VALUE staticContext = StaticContext_wrap ((zorba::StaticContext *) staticContext_real);
 
 	VALUE itemSequence = zr_funcall (
 		shadow,
@@ -87,7 +90,7 @@ ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
 		staticContext,
 		Qnil);
 
-	ZR_REAL (ItemSequence_t, itemSequence);
+	ZR_REAL (zorba::ItemSequence_t, itemSequence);
 
 	return * itemSequence_real;
 }

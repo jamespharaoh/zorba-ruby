@@ -19,9 +19,9 @@
 
 #ifdef INTERFACE_PART
 
-void Version_mark (Version *);
-void Version_delete (Version *);
-VALUE Version_wrap (Version *);
+void Version_mark (zorba::Version *);
+void Version_delete (zorba::Version *);
+VALUE Version_wrap (zorba::Version *);
 
 #endif
 #ifdef RUBY_PART
@@ -37,15 +37,15 @@ ZR_CLASS_METHOD (Version, version, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void Version_mark (Version * version_real) {
+void Version_mark (zorba::Version * version_real) {
 	// do nothing
 }
 
-void Version_delete (Version * version_real) {
+void Version_delete (zorba::Version * version_real) {
 	delete version_real;
 }
 
-VALUE Version_wrap (Version * version_real) {
+VALUE Version_wrap (zorba::Version * version_real) {
 	return Data_Wrap_Struct (
 		cVersion,
 		Version_mark,
@@ -54,27 +54,27 @@ VALUE Version_wrap (Version * version_real) {
 }
 
 VALUE Version_major_version (VALUE self) {
-	ZR_REAL (Version, self);
+	ZR_REAL (zorba::Version, self);
 	return INT2NUM (self_real->getMajorVersion ());
 }
 
 VALUE Version_minor_version (VALUE self) {
-	ZR_REAL (Version, self);
+	ZR_REAL (zorba::Version, self);
 	return INT2NUM (self_real->getMajorVersion ());
 }
 
 VALUE Version_patch_version (VALUE self) {
-	ZR_REAL (Version, self);
+	ZR_REAL (zorba::Version, self);
 	return INT2NUM (self_real->getMajorVersion ());
 }
 
 VALUE Version_to_s (VALUE self) {
-	ZR_REAL (Version, self);
+	ZR_REAL (zorba::Version, self);
 	return rb_str_new2 (self_real->getVersion ().c_str ());
 }
 
 VALUE Version_version (VALUE self) {
-	ZR_REAL (Version, self);
+	ZR_REAL (zorba::Version, self);
 	return rb_str_new2 (self_real->getVersion ().c_str ());
 }
 

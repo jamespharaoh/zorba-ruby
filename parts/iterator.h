@@ -19,9 +19,9 @@
 
 #ifdef INTERFACE_PART
 
-void Iterator_mark (Iterator_t *);
-void Iterator_delete (Iterator_t *);
-VALUE Iterator_wrap (Iterator *);
+void Iterator_mark (zorba::Iterator_t *);
+void Iterator_delete (zorba::Iterator_t *);
+VALUE Iterator_wrap (zorba::Iterator *);
 
 #endif
 #ifdef RUBY_PART
@@ -35,15 +35,15 @@ ZR_CLASS_METHOD (Iterator, open, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void Iterator_mark (Iterator_t * iterator_real) {
+void Iterator_mark (zorba::Iterator_t * iterator_real) {
 	// do nothing
 }
 
-void Iterator_delete (Iterator_t * iterator_real) {
+void Iterator_delete (zorba::Iterator_t * iterator_real) {
 	delete iterator_real;
 }
 
-VALUE Iterator_wrap (Iterator_t * iterator_real) {
+VALUE Iterator_wrap (zorba::Iterator_t * iterator_real) {
 
 	return Data_Wrap_Struct (
 		cIterator,
@@ -54,7 +54,7 @@ VALUE Iterator_wrap (Iterator_t * iterator_real) {
 
 VALUE Iterator_close (VALUE self) {
 
-	ZR_REAL (Iterator_t, self);
+	ZR_REAL (zorba::Iterator_t, self);
 
 	(* self_real)->close ();
 
@@ -63,9 +63,9 @@ VALUE Iterator_close (VALUE self) {
 
 VALUE Iterator_next (VALUE self) {
 
-	ZR_REAL (Iterator_t, self);
+	ZR_REAL (zorba::Iterator_t, self);
 
-	auto_ptr <Item> item_real (new Item ());
+	auto_ptr <zorba::Item> item_real (new zorba::Item ());
 
 	bool ret = (* self_real)->next (* item_real);
 	if (! ret) return Qnil;
@@ -75,7 +75,7 @@ VALUE Iterator_next (VALUE self) {
 
 VALUE Iterator_open (VALUE self) {
 
-	ZR_REAL (Iterator_t, self);
+	ZR_REAL (zorba::Iterator_t, self);
 
 	(* self_real)->open ();
 

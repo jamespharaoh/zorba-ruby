@@ -44,7 +44,6 @@
 	else Data_Get_Struct (name, type, name##_real)
 
 using namespace std;
-using namespace zorba;
 
 VALUE cStore;
 VALUE mStoreManager;
@@ -153,7 +152,7 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 
 VALUE mStoreManager_get_store (VALUE self) {
 
-	void *store_real = StoreManager::getStore ();
+	void *store_real = zorba::StoreManager::getStore ();
 	return Data_Wrap_Struct (cStore, 0, 0, store_real);
 }
 
@@ -206,7 +205,7 @@ VALUE mStoreManager_get_store (VALUE self) {
 		try { \
 			ZR_WRAP_INVOKE_##args (klass##_##name, self, argc, argv); \
 		} \
-		catch (ZorbaException & e) { zr_raise (e); } \
+		catch (zorba::ZorbaException & e) { zr_raise (e); } \
 		catch (RubyException & e) { zr_raise (e); } \
 	}
 
@@ -215,7 +214,7 @@ VALUE mStoreManager_get_store (VALUE self) {
 		try { \
 			ZR_WRAP_INVOKE_##args (klass##_##name, self, argc, argv); \
 		} \
-		catch (ZorbaException & e) { zr_raise (e); } \
+		catch (zorba::ZorbaException & e) { zr_raise (e); } \
 		catch (RubyException & e) { zr_raise (e); } \
 	}
 

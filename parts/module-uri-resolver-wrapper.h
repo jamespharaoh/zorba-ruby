@@ -19,7 +19,7 @@
 
 #ifdef INTERFACE_PART
 
-class ModuleUriResolverWrapper : public ModuleURIResolver {
+class ModuleUriResolverWrapper : public zorba::ModuleURIResolver {
 
 	VALUE value;
 
@@ -34,21 +34,21 @@ public:
 		exit (0);
 	}
 
-	virtual auto_ptr<ModuleURIResolverResult> resolveTargetNamespace (
-			const String& targetNamespaceURI,
-			const StaticContext& staticContext);
+	virtual auto_ptr<zorba::ModuleURIResolverResult> resolveTargetNamespace (
+			const zorba::String& targetNamespaceURI,
+			const zorba::StaticContext& staticContext);
 
-	virtual auto_ptr<ModuleURIResolverResult> resolve (
-			const String& uri,
-			const StaticContext& staticContext);
+	virtual auto_ptr<zorba::ModuleURIResolverResult> resolve (
+			const zorba::String& uri,
+			const zorba::StaticContext& staticContext);
 };
 
 #endif
 #ifdef IMPLEMENTATION_PART
 
-auto_ptr<ModuleURIResolverResult> ModuleUriResolverWrapper::resolveTargetNamespace (
-		const String& targetNamespaceURI,
-		const StaticContext& staticContext) {
+auto_ptr<zorba::ModuleURIResolverResult> ModuleUriResolverWrapper::resolveTargetNamespace (
+		const zorba::String& targetNamespaceURI,
+		const zorba::StaticContext& staticContext) {
 
 	VALUE ret = zr_funcall (
 		value,
@@ -57,14 +57,14 @@ auto_ptr<ModuleURIResolverResult> ModuleUriResolverWrapper::resolveTargetNamespa
 		rb_str_new2 (targetNamespaceURI.c_str ()));
 
 	VALUE shadow = rb_iv_get (ret, "@shadow");
-	ZR_REAL (ModuleURIResolverResult, shadow);
+	ZR_REAL (zorba::ModuleURIResolverResult, shadow);
 
-	return auto_ptr<ModuleURIResolverResult> (shadow_real);
+	return auto_ptr<zorba::ModuleURIResolverResult> (shadow_real);
 }
 
-auto_ptr<ModuleURIResolverResult> ModuleUriResolverWrapper::resolve (
-		const String& uri,
-		const StaticContext& staticContext) {
+auto_ptr<zorba::ModuleURIResolverResult> ModuleUriResolverWrapper::resolve (
+		const zorba::String& uri,
+		const zorba::StaticContext& staticContext) {
 
 	VALUE ret = zr_funcall (
 		value,
@@ -73,9 +73,9 @@ auto_ptr<ModuleURIResolverResult> ModuleUriResolverWrapper::resolve (
 		rb_str_new2 (uri.c_str ()));
 
 	VALUE shadow = rb_iv_get (ret, "@shadow");
-	ZR_REAL (ModuleURIResolverResult, shadow);
+	ZR_REAL (zorba::ModuleURIResolverResult, shadow);
 
-	return auto_ptr<ModuleURIResolverResult> (shadow_real);
+	return auto_ptr<zorba::ModuleURIResolverResult> (shadow_real);
 }
 
 #endif

@@ -19,9 +19,9 @@
 
 #ifdef INTERFACE_PART
 
-void Item_delete (Item *);
-void Item_mark (Item *);
-VALUE Item_wrap (Item *);
+void Item_delete (zorba::Item *);
+void Item_mark (zorba::Item *);
+VALUE Item_wrap (zorba::Item *);
 
 #endif
 #ifdef RUBY_PART
@@ -33,15 +33,15 @@ ZR_CLASS_METHOD (Item, string_value, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void Item_delete (Item * item_real) {
+void Item_delete (zorba::Item * item_real) {
 	delete item_real;
 }
 
-void Item_mark (Item * item_real) {
+void Item_mark (zorba::Item * item_real) {
 	// do nothing
 }
 
-VALUE Item_wrap (Item * item_real) {
+VALUE Item_wrap (zorba::Item * item_real) {
 
 	return Data_Wrap_Struct (
 		cItem,
@@ -52,9 +52,9 @@ VALUE Item_wrap (Item * item_real) {
 
 VALUE Item_string_value (VALUE self) {
 
-	ZR_REAL (Item, self);
+	ZR_REAL (zorba::Item, self);
 
-	String string = self_real->getStringValue ();
+	zorba::String string = self_real->getStringValue ();
 
 	return rb_str_new2 (string.c_str ());
 }

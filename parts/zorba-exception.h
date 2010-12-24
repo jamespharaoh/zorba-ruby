@@ -19,7 +19,7 @@
 
 #ifdef INTERFACE_PART
 
-void zr_raise (const ZorbaException &);
+void zr_raise (const zorba::ZorbaException &);
 void zr_raise (const RubyException &);
 
 #endif
@@ -39,7 +39,7 @@ ZR_CLASS_EXCEP (Zorba, UserException, eQueryException)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void zr_raise (const ZorbaException & zorbaException) {
+void zr_raise (const zorba::ZorbaException & zorbaException) {
 
 	if (RTEST (currentException)) {
 		VALUE currentExceptionTemp = currentException;
@@ -49,31 +49,32 @@ void zr_raise (const ZorbaException & zorbaException) {
 
 	VALUE rubyExceptionClass = eZorbaException;
 
-	if (dynamic_cast <const QueryException *> (& zorbaException)) {
+	if (dynamic_cast <const zorba::QueryException *> (& zorbaException)) {
 		rubyExceptionClass = eQueryException;
 
-		if (dynamic_cast <const DynamicException *> (& zorbaException)) {
+		if (dynamic_cast <const zorba::DynamicException *> (& zorbaException)) {
 			rubyExceptionClass = eDynamicException;
 
-		} else if (dynamic_cast <const StaticException *> (& zorbaException)) {
+		} else if (dynamic_cast <const zorba::StaticException *> (& zorbaException)) {
 			rubyExceptionClass = eStaticException;
 
-		} else if (dynamic_cast <const TypeException *> (& zorbaException)) {
+		} else if (dynamic_cast <const zorba::TypeException *> (& zorbaException)) {
 			rubyExceptionClass = eTypeException;
 
-		} else if (dynamic_cast <const UserException *> (& zorbaException)) {
+		} else if (dynamic_cast <const zorba::UserException *> (& zorbaException)) {
 			rubyExceptionClass = eUserException;
 		}
 
-	} else if (dynamic_cast <const SerializationException *> (& zorbaException)) {
+	} else if (dynamic_cast <const zorba::SerializationException *> (& zorbaException)) {
 		rubyExceptionClass = eSerializationException;
 
-	} else if (dynamic_cast <const SystemException *> (& zorbaException)) {
+	} else if (dynamic_cast <const zorba::SystemException *> (& zorbaException)) {
 		rubyExceptionClass = eSystemException;
 	}
 
 	rb_raise (rubyExceptionClass, "[%s] %s",
-		ZorbaException::getErrorCodeAsString (zorbaException.getErrorCode ()).c_str (),
+		zorba::ZorbaException::getErrorCodeAsString (
+			zorbaException.getErrorCode ()).c_str (),
 		zorbaException.getDescription ().c_str ());
 }
 

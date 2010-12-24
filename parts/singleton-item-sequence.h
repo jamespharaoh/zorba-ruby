@@ -31,10 +31,13 @@ ZR_CLASS_SINGLETON_METHOD (SingletonItemSequence, new, 1);
 
 VALUE SingletonItemSequence_new (VALUE self, VALUE item) {
 
-	ZR_REAL (Item, item);
+	ZR_REAL (zorba::Item, item);
 
-	ItemSequence_t * itemSequence_real = new ItemSequence_t ();
-	* itemSequence_real = auto_ptr<ItemSequence> (new SingletonItemSequence (* item_real));
+	zorba::ItemSequence_t * itemSequence_real = new zorba::ItemSequence_t ();
+
+	* itemSequence_real = auto_ptr<zorba::ItemSequence> (
+		new zorba::SingletonItemSequence (* item_real));
+
 	VALUE itemSequence = Data_Wrap_Struct (
 		cSingletonItemSequence,
 		0,

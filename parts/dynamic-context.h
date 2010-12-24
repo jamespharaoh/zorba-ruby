@@ -21,9 +21,9 @@
 
 class ZrDynamicContext {
 
-	static map <DynamicContext *, ZrDynamicContext *> instances;
+	static map <zorba::DynamicContext *, ZrDynamicContext *> instances;
 
-	DynamicContext * zorbaValue;
+	zorba::DynamicContext * zorbaValue;
 
 	VALUE rubyValue;
 
@@ -33,7 +33,7 @@ public:
 
 	~ZrDynamicContext ();
 
-	DynamicContext * zorba () { return zorbaValue; }
+	zorba::DynamicContext * zorba () { return zorbaValue; }
 
 	VALUE ruby () { return rubyValue; }
 
@@ -41,7 +41,7 @@ public:
 
 	static void del (ZrDynamicContext *);
 
-	static ZrDynamicContext * wrap (DynamicContext *);
+	static ZrDynamicContext * wrap (zorba::DynamicContext *);
 };
 
 #endif
@@ -54,15 +54,15 @@ ZR_CLASS_METHOD (DynamicContext, set_variable, 2)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-map <DynamicContext *, ZrDynamicContext *> ZrDynamicContext::instances;
+map <zorba::DynamicContext *, ZrDynamicContext *> ZrDynamicContext::instances;
 
 VALUE DynamicContext_set_variable (VALUE self, VALUE qname, VALUE item) {
 
 	ZR_REAL (ZrDynamicContext, self);
-	ZR_REAL (Item, item);
+	ZR_REAL (zorba::Item, item);
 
 	self_real->zorba ()->setVariable (
-		String (StringValueCStr (qname)),
+		zorba::String (StringValueCStr (qname)),
 		* item_real);
 
 	return Qnil;
@@ -75,7 +75,7 @@ void ZrDynamicContext::del (ZrDynamicContext * zrDynamicContext) {
 void ZrDynamicContext::mark (ZrDynamicContext * zrDynamicContext) {
 }
 
-ZrDynamicContext * ZrDynamicContext::wrap (DynamicContext * dynamicContext_zorba) {
+ZrDynamicContext * ZrDynamicContext::wrap (zorba::DynamicContext * dynamicContext_zorba) {
 
 	if (instances.count (dynamicContext_zorba))
 		return instances [dynamicContext_zorba];
@@ -95,6 +95,6 @@ ZrDynamicContext * ZrDynamicContext::wrap (DynamicContext * dynamicContext_zorba
 	return dynamicContext;
 }
 
-static map <DynamicContext *, ZrDynamicContext *> instances;
+static map <zorba::DynamicContext *, ZrDynamicContext *> instances;
 
 #endif

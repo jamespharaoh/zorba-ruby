@@ -52,11 +52,11 @@ VALUE Zorba_compile_query (int argc, VALUE * argv, VALUE self) {
 		rb_raise (rb_eArgError, "Expected 1 or 2 args, got %d", argc);
 	}
 
-	ZR_REAL (Zorba, self);
-	String query_string (RSTRING (query)->ptr);
-	ZR_REAL_OPT (StaticContext_t, staticContext);
+	ZR_REAL (zorba::Zorba, self);
+	zorba::String query_string (RSTRING (query)->ptr);
+	ZR_REAL_OPT (zorba::StaticContext_t, staticContext);
 
-	auto_ptr <XQuery_t> xquery_real (new XQuery_t ());
+	auto_ptr <zorba::XQuery_t> xquery_real (new zorba::XQuery_t ());
 
 	if (staticContext_real) {
 		* xquery_real = self_real->compileQuery (query_string, * staticContext_real);
@@ -69,9 +69,9 @@ VALUE Zorba_compile_query (int argc, VALUE * argv, VALUE self) {
 
 VALUE Zorba_create_query (VALUE self) {
 
-	ZR_REAL (Zorba, self);
+	ZR_REAL (zorba::Zorba, self);
 
-	auto_ptr <XQuery_t> xquery_real (new XQuery_t ());
+	auto_ptr <zorba::XQuery_t> xquery_real (new zorba::XQuery_t ());
 	* xquery_real = self_real->createQuery ();
 
 	return XQuery_wrap (xquery_real.release ());
@@ -79,9 +79,9 @@ VALUE Zorba_create_query (VALUE self) {
 
 VALUE Zorba_create_static_context (VALUE self) {
 
-	ZR_REAL (Zorba, self);
+	ZR_REAL (zorba::Zorba, self);
 
-	StaticContext_t * staticContext_real = new StaticContext_t ();
+	zorba::StaticContext_t * staticContext_real = new zorba::StaticContext_t ();
 	* staticContext_real = self_real->createStaticContext ();
 
 	VALUE staticContext = Data_Wrap_Struct (
@@ -97,34 +97,34 @@ VALUE Zorba_get_instance (VALUE self, VALUE store) {
 
 	ZR_REAL (void, store);
 
-	Zorba * zorba_real = Zorba::getInstance (store_real);
+	zorba::Zorba * zorba_real = zorba::Zorba::getInstance (store_real);
 
 	return Data_Wrap_Struct (cZorba, 0, 0, zorba_real);
 }
 
 VALUE Zorba_item_factory (VALUE self) {
 
-	ZR_REAL (Zorba, self);
+	ZR_REAL (zorba::Zorba, self);
 
-	ItemFactory * itemFactory_real = self_real->getItemFactory ();
+	zorba::ItemFactory * itemFactory_real = self_real->getItemFactory ();
 
 	return Data_Wrap_Struct (cItemFactory, 0, 0, itemFactory_real);
 }
 
 VALUE Zorba_version (VALUE self) {
 
-	auto_ptr <Version> version_real (new Version ());
+	auto_ptr <zorba::Version> version_real (new zorba::Version ());
 
-	* version_real = Zorba::version ();
+	* version_real = zorba::Zorba::version ();
 
 	return Version_wrap (version_real.release ());
 }
 
 VALUE Zorba_xml_data_manager (VALUE self) {
 
-	ZR_REAL (Zorba, self);
+	ZR_REAL (zorba::Zorba, self);
 
-	XmlDataManager * xml_data_manager_real = self_real->getXmlDataManager ();
+	zorba::XmlDataManager * xml_data_manager_real = self_real->getXmlDataManager ();
 
 	return Data_Wrap_Struct (cXmlDataManager, 0, 0, xml_data_manager_real);
 }

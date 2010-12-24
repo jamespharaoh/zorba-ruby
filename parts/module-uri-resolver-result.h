@@ -19,7 +19,7 @@
 
 #ifdef INTERFACE_PART
 
-class ModuleUriResolverResultWrapper : public ModuleURIResolverResult {
+class ModuleUriResolverResultWrapper : public zorba::ModuleURIResolverResult {
 
 public:
 

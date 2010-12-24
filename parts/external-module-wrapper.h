@@ -19,7 +19,7 @@
 
 #ifdef INTERFACE_PART
 
-class ExternalModuleWrapper : public ExternalModule {
+class ExternalModuleWrapper : public zorba::ExternalModule {
 
 	VALUE value;
 
@@ -34,15 +34,16 @@ public:
 		exit (0);
 	}
 
-	virtual StatelessExternalFunction* getExternalFunction (String aLocalname) const;
+	virtual zorba::StatelessExternalFunction * getExternalFunction (zorba::String aLocalname) const;
 
-	virtual String getURI () const;
+	virtual zorba::String getURI () const;
 };
 
 #endif
 #ifdef IMPLEMENTATION_PART
 
-StatelessExternalFunction* ExternalModuleWrapper::getExternalFunction (String localName) const {
+zorba::StatelessExternalFunction * ExternalModuleWrapper::getExternalFunction (
+		zorba::String localName) const {
 
 	VALUE ret = zr_funcall (
 		value,
@@ -51,12 +52,12 @@ StatelessExternalFunction* ExternalModuleWrapper::getExternalFunction (String lo
 		rb_str_new2 (localName.c_str ()));
 
 	VALUE shadow = rb_iv_get (ret, "@shadow");
-	ZR_REAL (StatelessExternalFunction, shadow);
+	ZR_REAL (zorba::StatelessExternalFunction, shadow);
 
 	return shadow_real;
 }
 
-String ExternalModuleWrapper::getURI () const {
+zorba::String ExternalModuleWrapper::getURI () const {
 
 	VALUE ret = zr_funcall (
 		value,
