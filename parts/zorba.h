@@ -31,6 +31,7 @@ ZR_CLASS_METHOD (Zorba, compile_query, VAR_C)
 ZR_CLASS_METHOD (Zorba, create_query, 0)
 ZR_CLASS_METHOD (Zorba, create_static_context, 0)
 ZR_CLASS_METHOD (Zorba, item_factory, 0)
+ZR_CLASS_METHOD (Zorba, shutdown, 0)
 ZR_CLASS_METHOD (Zorba, xml_data_manager, 0)
 
 #endif
@@ -104,6 +105,15 @@ VALUE Zorba_item_factory (VALUE self_ruby) {
 	zorba::ItemFactory * itemFactory_real = self_real->getItemFactory ();
 
 	return Data_Wrap_Struct (cItemFactory, 0, 0, itemFactory_real);
+}
+
+VALUE Zorba_shutdown (VALUE self_ruby) {
+
+	ZR_REAL (zorba::Zorba, self);
+
+	self_real->shutdown ();
+
+	return Qnil;
 }
 
 VALUE Zorba_version (VALUE self_ruby) {
