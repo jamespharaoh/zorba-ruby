@@ -25,15 +25,25 @@
 ZR_CLASS_MODULE (Zorba, StoreManager)
 
 ZR_MODULE_SINGLETON_METHOD (StoreManager, get_store, 0)
+ZR_MODULE_SINGLETON_METHOD (StoreManager, shutdown_store, 1)
 
 #endif
 #ifdef IMPLEMENTATION_PART
 
 VALUE StoreManager_get_store (VALUE self_ruby) {
 
-	void *store_real = zorba::StoreManager::getStore ();
+	void * store_real = zorba::StoreManager::getStore ();
 
 	return Data_Wrap_Struct (cStore, 0, 0, store_real);
+}
+
+VALUE StoreManager_shutdown_store (VALUE self_ruby, VALUE store_ruby) {
+
+	ZR_REAL (void, store);
+
+	zorba::StoreManager::shutdownStore (store_real);
+
+	return Qnil;
 }
 
 #endif
