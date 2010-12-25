@@ -65,12 +65,12 @@ VALUE Iterator_next (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Iterator_t, self);
 
-	auto_ptr <zorba::Item> item_real (new zorba::Item ());
+	Item * item = new Item ();
 
-	bool ret = (* self_real)->next (* item_real);
+	bool ret = (* self_real)->next (item->zorba ());
 	if (! ret) return Qnil;
 
-	return Item_wrap (item_real.release ());
+	return item->ruby ();
 }
 
 VALUE Iterator_open (VALUE self_ruby) {
