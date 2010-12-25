@@ -25,19 +25,21 @@ class ItemFactory {
 
 	VALUE self_ruby;
 
+	set <Item *> items;
+
 	ItemFactory () { }
 
-public:
-
 	~ItemFactory () { }
-
-	zorba::ItemFactory * zorba () { return self_zorba; }
-
-	VALUE ruby () { return self_ruby; }
 
 	static void mark (ItemFactory *);
 
 	static void del (ItemFactory *);
+
+public:
+
+	zorba::ItemFactory * zorba () { return self_zorba; }
+
+	VALUE ruby () { return self_ruby; }
 
 	static ItemFactory * wrap (zorba::ItemFactory *);
 };
@@ -59,7 +61,7 @@ void ItemFactory::mark (ItemFactory * itemFactory) {
 }
 
 void ItemFactory::del (ItemFactory * itemFactory) {
-	ZR_DEBUG ("ItemFactory::del");
+	ZR_DEBUG ("ItemFactory::del %p\n", itemFactory);
 	delete itemFactory;
 }
 
@@ -94,17 +96,17 @@ VALUE ItemFactory_create_element_node (
 
 	zorba::Item null_zorba;
 
-	zorba::Item * item_real = new zorba::Item ();
-	* item_real = self_real->zorba ()->createElementNode (
+	Item * item = new Item ();
+
+	item->zorba () = self_real->zorba ()->createElementNode (
 		parent_real ? parent_real->zorba () : null_zorba,
 		nodeName_real ? nodeName_real->zorba () : null_zorba,
 		typeName_real ? typeName_real->zorba () : null_zorba,
 		RTEST (hasTypedValue_ruby) ? true : false,
 		RTEST (hasEmptyValue_ruby) ? true : false,
 		vector<pair<zorba::String,zorba::String> > ());
-	VALUE item = Data_Wrap_Struct (cItem, 0, 0, item_real);
 
-	return item;
+	return item->ruby ();
 }
 
 VALUE ItemFactory_create_integer (VALUE self_ruby, VALUE integer_ruby) {

@@ -103,7 +103,7 @@ VALUE StaticContext_register_module (VALUE self_ruby, VALUE module_ruby) {
 }
 
 void StaticContext::del (StaticContext * staticContext) {
-	ZR_DEBUG ("StaticContext::del");
+	ZR_DEBUG ("StaticContext::del %p\n", staticContext);
 	delete staticContext;
 }
 

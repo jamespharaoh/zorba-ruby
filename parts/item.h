@@ -25,11 +25,11 @@ class Item {
 
 	VALUE self_ruby;
 
+	~Item () { }
+
 public:
 
 	Item ();
-
-	~Item () { }
 
 	zorba::Item & zorba () { return self_zorba; }
 
@@ -38,8 +38,6 @@ public:
 	static void mark (Item *);
 
 	static void del (Item *);
-
-	static Item * wrap (zorba::Item & item_zorba);
 };
 
 #endif
@@ -64,35 +62,9 @@ void Item::mark (Item * item) {
 }
 
 void Item::del (Item * item) {
-	ZR_DEBUG ("Item::del");
+	ZR_DEBUG ("Item::del %p %s\n", item, item->zorba ().getStringValue ().c_str ());
 	delete item;
 }
-
-Item * Item::wrap (zorba::Item & item_zorba) {
-
-	Item * item = new Item ();
-
-	item->self_zorba = item_zorba;
-
-	item->self_ruby = Data_Wrap_Struct (
-		cItem,
-		Item::mark,
-		Item::del,
-		item);
-
-	return item;
-}
-
-/*
-VALUE Item_wrap (zorba::Item * item_real) {
-
-	return Data_Wrap_Struct (
-		cItem,
-		Item_mark,
-		Item_delete,
-		(void *) item_real);
-}
-*/
 
 VALUE Item_string_value (VALUE self_ruby) {
 

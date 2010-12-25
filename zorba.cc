@@ -21,6 +21,7 @@
 #include <exception>
 #include <iostream>
 #include <map>
+#include <set>
 #include <sstream>
 
 #include <ruby.h>
@@ -49,8 +50,8 @@
 	if (name##_ruby == Qnil) name##_real = NULL; \
 	else Data_Get_Struct (name##_ruby, type, name##_real)
 
-#define ZR_DEBUG(message) \
-	cerr << "DEBUG: " << message << endl
+#define ZR_DEBUG(...) \
+	fprintf (stderr, __VA_ARGS__)
 
 using namespace std;
 
