@@ -19,6 +19,27 @@
 
 #ifdef INTERFACE_PART
 
+class ItemSequence {
+
+	zorba::ItemSequence * self_zorba;
+
+	VALUE self_ruby;
+
+	~ItemSequence () { }
+
+public:
+
+	ItemSequence (VALUE klass, zorba::ItemSequence *);
+
+	zorba::ItemSequence * zorba () { return self_zorba; }
+
+	VALUE ruby () { return self_ruby; }
+
+	static void mark (ItemSequence *);
+
+	static void del (ItemSequence *);
+};
+
 #endif
 #ifdef RUBY_PART
 
@@ -29,22 +50,29 @@ ZR_CLASS_SINGLETON_METHOD (SingletonItemSequence, new, 1);
 #endif
 #ifdef IMPLEMENTATION_PART
 
+ItemSequence::ItemSequence (VALUE klass, zorba::ItemSequence * itemSequence_zorba) {
+
+	self_zorba = itemSequence_zorba;
+
+	self_ruby = Data_Wrap_Struct (klass, mark, del, this);
+}
+
 VALUE SingletonItemSequence_new (VALUE self_ruby, VALUE item_ruby) {
 
-	ZR_REAL (zorba::Item, item);
+	ZR_REAL (Item, item);
 
-	zorba::ItemSequence_t * itemSequence = new zorba::ItemSequence_t ();
+	zorba::ItemSequence * itemSequence_zorba = new zorba::SingletonItemSequence (item->zorba ());
 
-	* itemSequence = auto_ptr<zorba::ItemSequence> (
-		new zorba::SingletonItemSequence (* item));
+	ItemSequence * itemSequence = new ItemSequence (cSingletonItemSequence, itemSequence_zorba);
 
-	VALUE itemSequence_ruby = Data_Wrap_Struct (
-		cSingletonItemSequence,
-		0,
-		0, // TODO
-		itemSequence);
+	return itemSequence->ruby ();
+}
 
-	return itemSequence_ruby;
+void ItemSequence::mark (ItemSequence * itemSequence) {
+}
+
+void ItemSequence::del (ItemSequence * itemSequence) {
+	delete itemSequence;
 }
 
 #endif
