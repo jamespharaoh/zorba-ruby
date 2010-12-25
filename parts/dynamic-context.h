@@ -19,29 +19,29 @@
 
 #ifdef INTERFACE_PART
 
-class ZrDynamicContext {
+class DynamicContext {
 
-	static map <zorba::DynamicContext *, ZrDynamicContext *> instances;
+	static map <zorba::DynamicContext *, DynamicContext *> instances;
 
 	zorba::DynamicContext * zorbaValue;
 
 	VALUE rubyValue;
 
-	ZrDynamicContext () { }
+	DynamicContext () { }
 
 public:
 
-	~ZrDynamicContext ();
+	~DynamicContext ();
 
 	zorba::DynamicContext * zorba () { return zorbaValue; }
 
 	VALUE ruby () { return rubyValue; }
 
-	static void mark (ZrDynamicContext *);
+	static void mark (DynamicContext *);
 
-	static void del (ZrDynamicContext *);
+	static void del (DynamicContext *);
 
-	static ZrDynamicContext * wrap (zorba::DynamicContext *);
+	static DynamicContext * wrap (zorba::DynamicContext *);
 };
 
 #endif
@@ -54,11 +54,11 @@ ZR_CLASS_METHOD (DynamicContext, set_variable, 2)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-map <zorba::DynamicContext *, ZrDynamicContext *> ZrDynamicContext::instances;
+map <zorba::DynamicContext *, DynamicContext *> DynamicContext::instances;
 
 VALUE DynamicContext_set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE item_ruby) {
 
-	ZR_REAL (ZrDynamicContext, self);
+	ZR_REAL (DynamicContext, self);
 	ZR_REAL (zorba::Item, item);
 
 	self_real->zorba ()->setVariable (
@@ -68,26 +68,26 @@ VALUE DynamicContext_set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE item
 	return Qnil;
 }
 
-void ZrDynamicContext::del (ZrDynamicContext * zrDynamicContext) {
-	delete zrDynamicContext;
+void DynamicContext::del (DynamicContext * dynamicContext) {
+	delete dynamicContext;
 }
 
-void ZrDynamicContext::mark (ZrDynamicContext * zrDynamicContext) {
+void DynamicContext::mark (DynamicContext * dynamicContext) {
 }
 
-ZrDynamicContext * ZrDynamicContext::wrap (zorba::DynamicContext * dynamicContext_zorba) {
+DynamicContext * DynamicContext::wrap (zorba::DynamicContext * dynamicContext_zorba) {
 
 	if (instances.count (dynamicContext_zorba))
 		return instances [dynamicContext_zorba];
 
-	ZrDynamicContext * dynamicContext = new ZrDynamicContext ();
+	DynamicContext * dynamicContext = new DynamicContext ();
 
 	dynamicContext->zorbaValue = dynamicContext_zorba;
 
 	dynamicContext->rubyValue = Data_Wrap_Struct (
 		cDynamicContext,
-		ZrDynamicContext::mark,
-		ZrDynamicContext::wrap,
+		DynamicContext::mark,
+		DynamicContext::wrap,
 		dynamicContext);
 
 	instances [dynamicContext_zorba] = dynamicContext;

@@ -91,7 +91,7 @@ VALUE XQuery_dynamic_context (VALUE self_ruby) {
 
 	zorba::DynamicContext * dynamicContext_zorba = (* self_real)->getDynamicContext ();
 
-	ZrDynamicContext * dynamicContext = ZrDynamicContext::wrap (dynamicContext_zorba);
+	DynamicContext * dynamicContext = DynamicContext::wrap (dynamicContext_zorba);
 
 	return dynamicContext->ruby ();
 }
