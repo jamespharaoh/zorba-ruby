@@ -50,6 +50,7 @@ public:
 ZR_CLASS_CLASS (Zorba, StaticContext, rb_cObject)
 
 ZR_CLASS_METHOD (StaticContext, add_module_uri_resolver, 1)
+ZR_CLASS_METHOD (StaticContext, load_prolog, 2)
 ZR_CLASS_METHOD (StaticContext, register_module, 1)
 
 #endif
@@ -68,6 +69,15 @@ VALUE StaticContext_add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriRes
 	self_real->zorba ()->addModuleURIResolver (moduleUriResolverZorba_real);
 
 	return Qnil;
+}
+
+VALUE StaticContext_load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hints_ruby) {
+
+	ZR_REAL (StaticContext, self);
+	const char * prolog = StringValueCStr (prolog_ruby);
+	ZR_SHADOW (CompilerHints, hints);
+
+	self_real->zorba ()->loadProlog (zorba::String (prolog), hints_real->zorba ());
 }
 
 VALUE StaticContext_register_module (VALUE self_ruby, VALUE module_ruby) {

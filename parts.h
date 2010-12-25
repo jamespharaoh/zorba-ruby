@@ -19,6 +19,7 @@
 
 #include "parts/zorba.h"
 
+#include "parts/compiler-hints.h"
 #include "parts/dynamic-context.h"
 #include "parts/external-module-wrapper.h"
 #include "parts/item.h"

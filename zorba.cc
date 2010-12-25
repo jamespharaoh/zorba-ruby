@@ -28,6 +28,7 @@
 #include <zorba/dynamic_context.h>
 #include <zorba/external_function.h>
 #include <zorba/external_module.h>
+#include <zorba/options.h>
 #include <zorba/singleton_item_sequence.h>
 #include <zorba/store_manager.h>
 #include <zorba/uri_resolvers.h>
@@ -37,6 +38,11 @@
 #define ZR_REAL(type, name) \
 	type * name##_real; \
 	Data_Get_Struct (name##_ruby, type, name##_real)
+
+#define ZR_SHADOW(type, name) \
+	VALUE name##Shadow_ruby = rb_iv_get (name##_ruby, "@shadow"); \
+	type * name##_real; \
+	Data_Get_Struct (name##Shadow_ruby, type, name##_real)
 
 #define ZR_REAL_OPT(type, name) \
 	type * name##_real; \
