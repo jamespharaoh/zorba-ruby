@@ -41,7 +41,7 @@ class MyModuleUriResolverResult < Zorba::ModuleUriResolverResult
 	attr_accessor :component_uris
 end
 
-class ModuleUriResolver < Zorba::ModuleUriResolver
+class MyModuleUriResolver < Zorba::ModuleUriResolver
 
 	def resolve_target_namespace target_namespace_uri
 		result = MyModuleUriResolverResult.new
@@ -115,7 +115,7 @@ $data_manager = $zorba.xml_data_manager
 $item_factory = $zorba.item_factory
 
 sctx = $zorba.create_static_context
-sctx.add_module_uri_resolver ModuleUriResolver.new
+sctx.add_module_uri_resolver MyModuleUriResolver.new
 sctx.register_module MyModule.new
 
 (ARGV[0] ||= 1).to_i.times do
