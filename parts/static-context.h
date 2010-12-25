@@ -21,9 +21,9 @@
 
 class StaticContext {
 
-	static map <zorba::StaticContext *, StaticContext *> instances;
+	static map <zorba::StaticContext_t, StaticContext *> instances;
 
-	zorba::StaticContext * zorbaValue;
+	zorba::StaticContext_t zorbaValue;
 
 	VALUE rubyValue;
 
@@ -41,7 +41,7 @@ public:
 
 	static void del (StaticContext *);
 
-	static StaticContext * wrap (zorba::StaticContext *);
+	static StaticContext * wrap (zorba::StaticContext_t);
 };
 
 #endif
@@ -55,7 +55,7 @@ ZR_CLASS_METHOD (StaticContext, register_module, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-map <zorba::StaticContext *, StaticContext *> StaticContext::instances;
+map <zorba::StaticContext_t, StaticContext *> StaticContext::instances;
 
 VALUE StaticContext_add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby) {
 
@@ -89,7 +89,7 @@ void StaticContext::del (StaticContext * staticContext) {
 void StaticContext::mark (StaticContext * staticContext) {
 }
 
-StaticContext * StaticContext::wrap (zorba::StaticContext * staticContext_zorba) {
+StaticContext * StaticContext::wrap (zorba::StaticContext_t staticContext_zorba) {
 
 	if (instances.count (staticContext_zorba))
 		return instances [staticContext_zorba];
