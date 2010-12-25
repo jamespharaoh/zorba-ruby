@@ -23,6 +23,8 @@ void Item_delete (zorba::Item *);
 void Item_mark (zorba::Item *);
 VALUE Item_wrap (zorba::Item *);
 
+zorba::Item Item_get (VALUE item_ruby);
+
 #endif
 #ifdef RUBY_PART
 
@@ -57,6 +59,12 @@ VALUE Item_string_value (VALUE self_ruby) {
 	zorba::String string = self_real->getStringValue ();
 
 	return rb_str_new2 (string.c_str ());
+}
+
+zorba::Item Item_get (VALUE item_ruby) {
+	if (! RTEST (item_ruby)) return zorba::Item ();
+	ZR_REAL (zorba::Item, item);
+	return * item_real;
 }
 
 #endif

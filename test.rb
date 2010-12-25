@@ -121,6 +121,12 @@ sctx.register_module MyModule.new
 (ARGV[0] ||= 1).to_i.times do
 	xquery = $zorba.compile_query MAIN, sctx
 	puts xquery.execute
+	xquery.close
 end
+
+sctx.free
+
+$zorba.shutdown
+Zorba::StoreManager.shutdown_store $store
 
 exit

@@ -29,6 +29,7 @@ VALUE XQuery_wrap (zorba::XQuery_t *);
 ZR_CLASS_CLASS (Zorba, XQuery, rb_cObject)
 
 ZR_CLASS_METHOD (XQuery, clone, 0)
+ZR_CLASS_METHOD (XQuery, close, 0)
 ZR_CLASS_METHOD (XQuery, compile, 1)
 ZR_CLASS_METHOD (XQuery, dynamic_context, 0)
 ZR_CLASS_METHOD (XQuery, execute, 0)
@@ -37,6 +38,15 @@ ZR_CLASS_METHOD (XQuery, filename_eq, 1)
 
 #endif
 #ifdef IMPLEMENTATION_PART
+
+VALUE XQuery_close (VALUE self_ruby) {
+
+	ZR_REAL (zorba::XQuery_t, self);
+
+	(* self_real)->close ();
+
+	return Qnil;
+}
 
 void XQuery_delete (zorba::XQuery_t * xquery_real) {
 	delete xquery_real;

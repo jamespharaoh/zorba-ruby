@@ -49,6 +49,9 @@
 	if (name##_ruby == Qnil) name##_real = NULL; \
 	else Data_Get_Struct (name##_ruby, type, name##_real)
 
+#define ZR_DEBUG(message) \
+	cerr << "DEBUG: " << message << endl
+
 using namespace std;
 
 VALUE cStore;
