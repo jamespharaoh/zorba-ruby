@@ -35,28 +35,28 @@ ZR_CLASS_METHOD (Iterator, open, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void Iterator_mark (zorba::Iterator_t * iterator_real) {
+void Iterator_mark (zorba::Iterator_t * iterator) {
 	// do nothing
 }
 
-void Iterator_delete (zorba::Iterator_t * iterator_real) {
-	delete iterator_real;
+void Iterator_delete (zorba::Iterator_t * iterator) {
+	delete iterator;
 }
 
-VALUE Iterator_wrap (zorba::Iterator_t * iterator_real) {
+VALUE Iterator_wrap (zorba::Iterator_t * iterator) {
 
 	return Data_Wrap_Struct (
 		cIterator,
 		Iterator_mark,
 		Iterator_delete,
-		(void *) iterator_real);
+		(void *) iterator);
 }
 
 VALUE Iterator_close (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Iterator_t, self);
 
-	(* self_real)->close ();
+	(* self)->close ();
 
 	return Qnil;
 }
@@ -67,7 +67,7 @@ VALUE Iterator_next (VALUE self_ruby) {
 
 	Item * item = new Item ();
 
-	bool ret = (* self_real)->next (item->zorba ());
+	bool ret = (* self)->next (item->zorba ());
 	if (! ret) return Qnil;
 
 	return item->ruby ();
@@ -77,7 +77,7 @@ VALUE Iterator_open (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Iterator_t, self);
 
-	(* self_real)->open ();
+	(* self)->open ();
 
 	return Qnil;
 }

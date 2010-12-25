@@ -82,7 +82,7 @@ auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::resolveTargetNamesp
 	VALUE retZorba_ruby = rb_iv_get (retRuby_ruby, "@shadow");
 	ZR_REAL (zorba::ModuleURIResolverResult, retZorba);
 
-	return auto_ptr <zorba::ModuleURIResolverResult> (retZorba_real);
+	return auto_ptr <zorba::ModuleURIResolverResult> (retZorba);
 }
 
 auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::resolve (
@@ -98,7 +98,7 @@ auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::resolve (
 	VALUE retShadow_ruby = rb_iv_get (ret_ruby, "@shadow");
 	ZR_REAL (zorba::ModuleURIResolverResult, retShadow);
 
-	return auto_ptr <zorba::ModuleURIResolverResult> (retShadow_real);
+	return auto_ptr <zorba::ModuleURIResolverResult> (retShadow);
 }
 
 void ModuleUriResolver::del (ModuleUriResolver * moduleUriResolver) {

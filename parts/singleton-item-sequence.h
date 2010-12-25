@@ -33,18 +33,18 @@ VALUE SingletonItemSequence_new (VALUE self_ruby, VALUE item_ruby) {
 
 	ZR_REAL (zorba::Item, item);
 
-	zorba::ItemSequence_t * itemSequence_real = new zorba::ItemSequence_t ();
+	zorba::ItemSequence_t * itemSequence = new zorba::ItemSequence_t ();
 
-	* itemSequence_real = auto_ptr<zorba::ItemSequence> (
-		new zorba::SingletonItemSequence (* item_real));
+	* itemSequence = auto_ptr<zorba::ItemSequence> (
+		new zorba::SingletonItemSequence (* item));
 
-	VALUE itemSequence = Data_Wrap_Struct (
+	VALUE itemSequence_ruby = Data_Wrap_Struct (
 		cSingletonItemSequence,
 		0,
 		0, // TODO
-		itemSequence_real);
+		itemSequence);
 
-	return itemSequence;
+	return itemSequence_ruby;
 }
 
 #endif

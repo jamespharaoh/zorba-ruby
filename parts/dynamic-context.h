@@ -61,9 +61,9 @@ VALUE DynamicContext_set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE item
 	ZR_REAL (DynamicContext, self);
 	ZR_REAL (zorba::Item, item);
 
-	self_real->zorba ()->setVariable (
+	self->zorba ()->setVariable (
 		zorba::String (StringValueCStr (qname_ruby)),
-		* item_real);
+		* item);
 
 	return Qnil;
 }

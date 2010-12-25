@@ -54,7 +54,7 @@ zorba::StatelessExternalFunction * ExternalModuleWrapper::getExternalFunction (
 	VALUE shadow_ruby = rb_iv_get (ret, "@shadow");
 	ZR_REAL (zorba::StatelessExternalFunction, shadow);
 
-	return shadow_real;
+	return shadow;
 }
 
 zorba::String ExternalModuleWrapper::getURI () const {

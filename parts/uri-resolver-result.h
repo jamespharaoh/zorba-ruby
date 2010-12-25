@@ -46,7 +46,7 @@ VALUE UriResolverResult_error_eq (VALUE self_ruby, VALUE error_ruby) {
 	VALUE shadow_ruby = rb_iv_get (self_ruby, "@shadow");
 	ZR_REAL (zorba::URIResolverResult, shadow);
 
-	shadow_real->setError ((zorba::URIResolverResult::ErrorCode) NUM2INT (error_ruby));
+	shadow->setError ((zorba::URIResolverResult::ErrorCode) NUM2INT (error_ruby));
 }
 
 #endif

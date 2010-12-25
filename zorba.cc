@@ -37,18 +37,18 @@
 #include <zorba/zorba.h>
 
 #define ZR_REAL(type, name) \
-	type * name##_real; \
-	Data_Get_Struct (name##_ruby, type, name##_real)
+	type * name; \
+	Data_Get_Struct (name##_ruby, type, name)
 
 #define ZR_SHADOW(type, name) \
 	VALUE name##Shadow_ruby = rb_iv_get (name##_ruby, "@shadow"); \
-	type * name##_real; \
-	Data_Get_Struct (name##Shadow_ruby, type, name##_real)
+	type * name; \
+	Data_Get_Struct (name##Shadow_ruby, type, name)
 
 #define ZR_REAL_OPT(type, name) \
-	type * name##_real; \
-	if (name##_ruby == Qnil) name##_real = NULL; \
-	else Data_Get_Struct (name##_ruby, type, name##_real)
+	type * name; \
+	if (name##_ruby == Qnil) name = NULL; \
+	else Data_Get_Struct (name##_ruby, type, name)
 
 #define ZR_DEBUG(...) \
 	fprintf (stderr, __VA_ARGS__)

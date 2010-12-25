@@ -56,14 +56,14 @@ ZR_CLASS_METHOD (NonePureStatelessExternalFunction, initialize, 0)
 
 VALUE NonePureStatelessExternalFunction_initialize (VALUE self_ruby) {
 
-	NonePureStatelessExternalFunctionWrapper* shadow_real =
+	NonePureStatelessExternalFunctionWrapper* shadow =
 		new NonePureStatelessExternalFunctionWrapper (self_ruby);
 
 	VALUE shadow_ruby = Data_Wrap_Struct (
 		cNonePureStatelessExternalFunction,
 		0,
 		0, /* TODO? */
-		shadow_real);
+		shadow);
 
 	rb_iv_set (self_ruby, "@shadow", shadow_ruby);
 
@@ -81,9 +81,9 @@ zorba::String NonePureStatelessExternalFunctionWrapper::getURI () const {
 }
 
 zorba::ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
-		const Arguments_t & arguments_real,
+		const Arguments_t & arguments,
 		const zorba::StaticContext * staticContext_zorba,
-		const zorba::DynamicContext * dynamicContext_real) const {
+		const zorba::DynamicContext * dynamicContext) const {
 
 	// TODO maintain constness in ruby
 	StaticContext * staticContext = StaticContext::wrap (
@@ -99,7 +99,7 @@ zorba::ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
 
 	ZR_REAL (zorba::ItemSequence_t, itemSequence);
 
-	return * itemSequence_real;
+	return * itemSequence;
 }
 
 #endif

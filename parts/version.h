@@ -37,45 +37,45 @@ ZR_CLASS_METHOD (Version, version, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void Version_mark (zorba::Version * version_real) {
+void Version_mark (zorba::Version * version) {
 	// do nothing
 }
 
-void Version_delete (zorba::Version * version_real) {
-	delete version_real;
+void Version_delete (zorba::Version * version) {
+	delete version;
 }
 
-VALUE Version_wrap (zorba::Version * version_real) {
+VALUE Version_wrap (zorba::Version * version) {
 	return Data_Wrap_Struct (
 		cVersion,
 		Version_mark,
 		Version_delete,
-		(void *) version_real);
+		(void *) version);
 }
 
 VALUE Version_major_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
-	return INT2NUM (self_real->getMajorVersion ());
+	return INT2NUM (self->getMajorVersion ());
 }
 
 VALUE Version_minor_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
-	return INT2NUM (self_real->getMajorVersion ());
+	return INT2NUM (self->getMajorVersion ());
 }
 
 VALUE Version_patch_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
-	return INT2NUM (self_real->getMajorVersion ());
+	return INT2NUM (self->getMajorVersion ());
 }
 
 VALUE Version_to_s (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
-	return rb_str_new2 (self_real->getVersion ().c_str ());
+	return rb_str_new2 (self->getVersion ().c_str ());
 }
 
 VALUE Version_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
-	return rb_str_new2 (self_real->getVersion ().c_str ());
+	return rb_str_new2 (self->getVersion ().c_str ());
 }
 
 #endif

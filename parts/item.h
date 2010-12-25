@@ -70,7 +70,7 @@ VALUE Item_string_value (VALUE self_ruby) {
 
 	ZR_REAL (Item, self);
 
-	zorba::String string = self_real->zorba ().getStringValue ();
+	zorba::String string = self->zorba ().getStringValue ();
 
 	return rb_str_new2 (string.c_str ());
 }

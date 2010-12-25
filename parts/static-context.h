@@ -67,7 +67,7 @@ VALUE StaticContext_add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriRes
 
 	ZR_REAL (ModuleUriResolver, moduleUriResolverZorba);
 
-	self_real->zorba ()->addModuleURIResolver (moduleUriResolverZorba_real);
+	self->zorba ()->addModuleURIResolver (moduleUriResolverZorba);
 
 	return Qnil;
 }
@@ -76,7 +76,7 @@ VALUE StaticContext_free (VALUE self_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
-	self_real->zorba ()->free ();
+	self->zorba ()->free ();
 
 	return Qnil;
 }
@@ -87,17 +87,17 @@ VALUE StaticContext_load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hints
 	const char * prolog = StringValueCStr (prolog_ruby);
 	ZR_SHADOW (CompilerHints, hints);
 
-	self_real->zorba ()->loadProlog (zorba::String (prolog), hints_real->zorba ());
+	self->zorba ()->loadProlog (zorba::String (prolog), hints->zorba ());
 }
 
 VALUE StaticContext_register_module (VALUE self_ruby, VALUE module_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
-	ExternalModuleWrapper * module_real =
+	ExternalModuleWrapper * module =
 		new ExternalModuleWrapper (module_ruby);
 
-	self_real->zorba ()->registerModule (module_real);
+	self->zorba ()->registerModule (module);
 
 	return Qnil;
 }

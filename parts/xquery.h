@@ -43,44 +43,44 @@ VALUE XQuery_close (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
-	(* self_real)->close ();
+	(* self)->close ();
 
 	return Qnil;
 }
 
-void XQuery_delete (zorba::XQuery_t * xquery_real) {
-	delete xquery_real;
+void XQuery_delete (zorba::XQuery_t * xquery) {
+	delete xquery;
 }
 
-void XQuery_mark (zorba::XQuery_t * xquery_real) {
+void XQuery_mark (zorba::XQuery_t * xquery) {
 	// do nothing
 }
 
-VALUE XQuery_wrap (zorba::XQuery_t * xquery_real) {
+VALUE XQuery_wrap (zorba::XQuery_t * xquery) {
 
 	return Data_Wrap_Struct (
 		cXQuery,
 		XQuery_mark,
 		XQuery_delete,
-		(void *) xquery_real);
+		(void *) xquery);
 }
 
 VALUE XQuery_clone (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
-	zorba::XQuery_t * cloned_real = new zorba::XQuery_t ();
+	zorba::XQuery_t * cloned = new zorba::XQuery_t ();
 
-	* cloned_real = (* self_real)->clone ();
+	* cloned = (* self)->clone ();
 
-	return XQuery_wrap (cloned_real);
+	return XQuery_wrap (cloned);
 }
 
 VALUE XQuery_compile (VALUE self_ruby, VALUE query_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
-	(* self_real)->compile (StringValueCStr (query_ruby));
+	(* self)->compile (StringValueCStr (query_ruby));
 
 	return Qnil;
 }
@@ -89,7 +89,7 @@ VALUE XQuery_dynamic_context (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
-	zorba::DynamicContext * dynamicContext_zorba = (* self_real)->getDynamicContext ();
+	zorba::DynamicContext * dynamicContext_zorba = (* self)->getDynamicContext ();
 
 	DynamicContext * dynamicContext = DynamicContext::wrap (dynamicContext_zorba);
 
@@ -102,7 +102,7 @@ VALUE XQuery_execute (VALUE self_ruby) {
 
 	basic_ostringstream<char> out;
 
-	(*self_real)->execute (out);
+	(*self)->execute (out);
 
 	return rb_str_new2 (out.str ().c_str ());
 }
@@ -111,19 +111,20 @@ VALUE XQuery_iterator (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
-	auto_ptr <zorba::Iterator_t> iterator_real (new zorba::Iterator_t ());
+	auto_ptr <zorba::Iterator_t> iterator (new zorba::Iterator_t ());
 
-	* iterator_real = (* self_real)->iterator ();
-	VALUE iterator = Iterator_wrap (iterator_real.release ());
+	* iterator = (* self)->iterator ();
 
-	return iterator;
+	VALUE iterator_ruby = Iterator_wrap (iterator.release ());
+
+	return iterator_ruby;
 }
 
 VALUE XQuery_filename_eq (VALUE self_ruby, VALUE value_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
-	(* self_real)->setFileName (StringValueCStr (value_ruby));
+	(* self)->setFileName (StringValueCStr (value_ruby));
 
 	return Qnil;
 }
