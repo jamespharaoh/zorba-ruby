@@ -50,7 +50,7 @@ VALUE Item_wrap (zorba::Item * item_real) {
 		(void *) item_real);
 }
 
-VALUE Item_string_value (VALUE self) {
+VALUE Item_string_value (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Item, self);
 

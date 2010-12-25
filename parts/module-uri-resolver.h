@@ -60,42 +60,42 @@ ZR_CLASS_METHOD (ModuleUriResolver, initialize, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE ModuleUriResolver_initialize (VALUE self) {
+VALUE ModuleUriResolver_initialize (VALUE self_ruby) {
 
-	ModuleUriResolver * shadow = ModuleUriResolver::initialize (self);
+	ModuleUriResolver * selfZorba = ModuleUriResolver::initialize (self_ruby);
 
-	rb_iv_set (self, "@shadow", shadow->ruby ());
+	rb_iv_set (self_ruby, "@shadow", selfZorba->ruby ());
 
-	return self;
+	return self_ruby;
 }
 
 auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::resolveTargetNamespace (
 		const zorba::String & targetNamespaceURI,
 		const zorba::StaticContext& staticContext) {
 
-	VALUE ret_ruby = zr_funcall (
+	VALUE retRuby_ruby = zr_funcall (
 		shadow_ruby,
 		rb_intern ("resolve_target_namespace"),
 		1,
 		rb_str_new2 (targetNamespaceURI.c_str ()));
 
-	VALUE retShadow = rb_iv_get (ret_ruby, "@shadow");
-	ZR_REAL (zorba::ModuleURIResolverResult, retShadow);
+	VALUE retZorba_ruby = rb_iv_get (retRuby_ruby, "@shadow");
+	ZR_REAL (zorba::ModuleURIResolverResult, retZorba);
 
-	return auto_ptr <zorba::ModuleURIResolverResult> (retShadow_real);
+	return auto_ptr <zorba::ModuleURIResolverResult> (retZorba_real);
 }
 
 auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::resolve (
 		const zorba::String& uri,
 		const zorba::StaticContext& staticContext) {
 
-	VALUE ret = zr_funcall (
+	VALUE ret_ruby = zr_funcall (
 		shadow_ruby,
 		rb_intern ("resolve"),
 		1,
 		rb_str_new2 (uri.c_str ()));
 
-	VALUE retShadow = rb_iv_get (ret, "@shadow");
+	VALUE retShadow_ruby = rb_iv_get (ret_ruby, "@shadow");
 	ZR_REAL (zorba::ModuleURIResolverResult, retShadow);
 
 	return auto_ptr <zorba::ModuleURIResolverResult> (retShadow_real);

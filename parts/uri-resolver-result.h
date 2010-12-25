@@ -41,12 +41,12 @@ ZR_CLASS_CONST (UriResolverResult, UR_XQST0088, INT2NUM (zorba::URIResolverResul
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE UriResolverResult_error_eq (VALUE self, VALUE error) {
+VALUE UriResolverResult_error_eq (VALUE self_ruby, VALUE error_ruby) {
 
-	VALUE shadow = rb_iv_get (self, "@shadow");
+	VALUE shadow_ruby = rb_iv_get (self_ruby, "@shadow");
 	ZR_REAL (zorba::URIResolverResult, shadow);
 
-	shadow_real->setError ((zorba::URIResolverResult::ErrorCode) NUM2INT (error));
+	shadow_real->setError ((zorba::URIResolverResult::ErrorCode) NUM2INT (error_ruby));
 }
 
 #endif

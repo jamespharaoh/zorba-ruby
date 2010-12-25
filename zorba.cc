@@ -36,12 +36,12 @@
 
 #define ZR_REAL(type, name) \
 	type * name##_real; \
-	Data_Get_Struct (name, type, name##_real)
+	Data_Get_Struct (name##_ruby, type, name##_real)
 
 #define ZR_REAL_OPT(type, name) \
 	type * name##_real; \
-	if (name == Qnil) name##_real = NULL; \
-	else Data_Get_Struct (name, type, name##_real)
+	if (name##_ruby == Qnil) name##_real = NULL; \
+	else Data_Get_Struct (name##_ruby, type, name##_real)
 
 using namespace std;
 

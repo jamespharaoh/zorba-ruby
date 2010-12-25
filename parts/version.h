@@ -53,27 +53,27 @@ VALUE Version_wrap (zorba::Version * version_real) {
 		(void *) version_real);
 }
 
-VALUE Version_major_version (VALUE self) {
+VALUE Version_major_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return INT2NUM (self_real->getMajorVersion ());
 }
 
-VALUE Version_minor_version (VALUE self) {
+VALUE Version_minor_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return INT2NUM (self_real->getMajorVersion ());
 }
 
-VALUE Version_patch_version (VALUE self) {
+VALUE Version_patch_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return INT2NUM (self_real->getMajorVersion ());
 }
 
-VALUE Version_to_s (VALUE self) {
+VALUE Version_to_s (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return rb_str_new2 (self_real->getVersion ().c_str ());
 }
 
-VALUE Version_version (VALUE self) {
+VALUE Version_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return rb_str_new2 (self_real->getVersion ().c_str ());
 }

@@ -45,66 +45,66 @@ VALUE ItemFactory_wrap (const zorba::ItemFactory * itemFactory_real) {
 	return itemFactory;
 }
 
-zorba::Item Item_get (VALUE item) {
-	if (! RTEST (item)) return zorba::Item ();
+zorba::Item Item_get (VALUE item_ruby) {
+	if (! RTEST (item_ruby)) return zorba::Item ();
 	ZR_REAL (zorba::Item, item);
 	return * item_real;
 }
 
 VALUE ItemFactory_create_element_node (
-		VALUE self,
-		VALUE parent,
-		VALUE nodeName,
-		VALUE typeName,
-		VALUE hasTypedValue,
-		VALUE hasEmptyValue,
-		VALUE nsBindings) {
+		VALUE self_ruby,
+		VALUE parent_ruby,
+		VALUE nodeName_ruby,
+		VALUE typeName_ruby,
+		VALUE hasTypedValue_ruby,
+		VALUE hasEmptyValue_ruby,
+		VALUE nsBindings_ruby) {
 
 	ZR_REAL (zorba::ItemFactory, self);
 
-	zorba::Item parent_real = Item_get (parent);
+	zorba::Item parent_real = Item_get (parent_ruby);
 
 	zorba::Item * item_real = new zorba::Item ();
 	* item_real = self_real->createElementNode (
 		parent_real,
-		Item_get (nodeName),
-		Item_get (typeName),
-		RTEST (hasTypedValue) ? true : false,
-		RTEST (hasEmptyValue) ? true : false,
+		Item_get (nodeName_ruby),
+		Item_get (typeName_ruby),
+		RTEST (hasTypedValue_ruby) ? true : false,
+		RTEST (hasEmptyValue_ruby) ? true : false,
 		vector<pair<zorba::String,zorba::String> > ());
 	VALUE item = Data_Wrap_Struct (cItem, 0, 0, item_real);
 
 	return item;
 }
 
-VALUE ItemFactory_create_integer (VALUE self, VALUE integer) {
+VALUE ItemFactory_create_integer (VALUE self_ruby, VALUE integer_ruby) {
 
 	ZR_REAL (zorba::ItemFactory, self);
 
 	zorba::Item * item_real = new zorba::Item ();
-	* item_real = self_real->createInteger (NUM2ULONG (integer));
+	* item_real = self_real->createInteger (NUM2ULONG (integer_ruby));
 	VALUE item = Data_Wrap_Struct (cItem, 0, Item_delete, item_real);
 
 	return item;
 }
 
-VALUE ItemFactory_create_qname (VALUE self, VALUE ns, VALUE localName) {
+VALUE ItemFactory_create_qname (VALUE self_ruby, VALUE ns_ruby, VALUE localName_ruby) {
 
 	ZR_REAL (zorba::ItemFactory, self);
 
 	zorba::Item * item_real = new zorba::Item ();
-	* item_real = self_real->createQName (RSTRING (ns)->ptr, RSTRING (localName)->ptr);
+	* item_real = self_real->createQName (RSTRING (ns_ruby)->ptr, RSTRING (localName_ruby)->ptr);
 	VALUE item = Data_Wrap_Struct (cItem, 0, Item_delete, item_real);
 
 	return item;
 }
 
-VALUE ItemFactory_create_string (VALUE self, VALUE str) {
+VALUE ItemFactory_create_string (VALUE self_ruby, VALUE str_ruby) {
 
 	ZR_REAL (zorba::ItemFactory, self);
 
 	zorba::Item * item_real = new zorba::Item ();
-	* item_real = self_real->createString (RSTRING (str)->ptr);
+	* item_real = self_real->createString (RSTRING (str_ruby)->ptr);
 	VALUE item = Data_Wrap_Struct (cItem, 0, Item_delete, item_real);
 
 	return item;

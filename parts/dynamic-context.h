@@ -56,13 +56,13 @@ ZR_CLASS_METHOD (DynamicContext, set_variable, 2)
 
 map <zorba::DynamicContext *, ZrDynamicContext *> ZrDynamicContext::instances;
 
-VALUE DynamicContext_set_variable (VALUE self, VALUE qname, VALUE item) {
+VALUE DynamicContext_set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE item_ruby) {
 
 	ZR_REAL (ZrDynamicContext, self);
 	ZR_REAL (zorba::Item, item);
 
 	self_real->zorba ()->setVariable (
-		zorba::String (StringValueCStr (qname)),
+		zorba::String (StringValueCStr (qname_ruby)),
 		* item_real);
 
 	return Qnil;

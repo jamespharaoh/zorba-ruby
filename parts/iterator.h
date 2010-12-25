@@ -52,7 +52,7 @@ VALUE Iterator_wrap (zorba::Iterator_t * iterator_real) {
 		(void *) iterator_real);
 }
 
-VALUE Iterator_close (VALUE self) {
+VALUE Iterator_close (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Iterator_t, self);
 
@@ -61,7 +61,7 @@ VALUE Iterator_close (VALUE self) {
 	return Qnil;
 }
 
-VALUE Iterator_next (VALUE self) {
+VALUE Iterator_next (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Iterator_t, self);
 
@@ -73,7 +73,7 @@ VALUE Iterator_next (VALUE self) {
 	return Item_wrap (item_real.release ());
 }
 
-VALUE Iterator_open (VALUE self) {
+VALUE Iterator_open (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Iterator_t, self);
 

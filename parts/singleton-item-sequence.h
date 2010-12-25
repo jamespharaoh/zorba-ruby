@@ -29,7 +29,7 @@ ZR_CLASS_SINGLETON_METHOD (SingletonItemSequence, new, 1);
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE SingletonItemSequence_new (VALUE self, VALUE item) {
+VALUE SingletonItemSequence_new (VALUE self_ruby, VALUE item_ruby) {
 
 	ZR_REAL (zorba::Item, item);
 

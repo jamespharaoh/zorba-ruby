@@ -54,14 +54,20 @@ ZR_CLASS_METHOD (NonePureStatelessExternalFunction, initialize, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE NonePureStatelessExternalFunction_initialize (VALUE self) {
+VALUE NonePureStatelessExternalFunction_initialize (VALUE self_ruby) {
 
-	NonePureStatelessExternalFunctionWrapper* shadow_real = new NonePureStatelessExternalFunctionWrapper (self);
-	VALUE shadow = Data_Wrap_Struct (cNonePureStatelessExternalFunction, 0, 0/* TODO? */, shadow_real);
+	NonePureStatelessExternalFunctionWrapper* shadow_real =
+		new NonePureStatelessExternalFunctionWrapper (self_ruby);
 
-	rb_iv_set (self, "@shadow", shadow);
+	VALUE shadow_ruby = Data_Wrap_Struct (
+		cNonePureStatelessExternalFunction,
+		0,
+		0, /* TODO? */
+		shadow_real);
 
-	return self;
+	rb_iv_set (self_ruby, "@shadow", shadow_ruby);
+
+	return self_ruby;
 }
 
 zorba::String NonePureStatelessExternalFunctionWrapper::getLocalName () const {
@@ -83,7 +89,7 @@ zorba::ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
 	StaticContext * staticContext = StaticContext::wrap (
 		(zorba::StaticContext *) staticContext_zorba);
 
-	VALUE itemSequence = zr_funcall (
+	VALUE itemSequence_ruby = zr_funcall (
 		shadow,
 		rb_intern ("evaluate"),
 		3,

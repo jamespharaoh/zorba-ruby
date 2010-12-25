@@ -57,11 +57,11 @@ ZR_CLASS_METHOD (StaticContext, register_module, 1)
 
 map <zorba::StaticContext *, StaticContext *> StaticContext::instances;
 
-VALUE StaticContext_add_module_uri_resolver (VALUE self, VALUE moduleUriResolverRuby) {
+VALUE StaticContext_add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
-	VALUE moduleUriResolverZorba = rb_iv_get (moduleUriResolverRuby, "@shadow");
+	VALUE moduleUriResolverZorba_ruby = rb_iv_get (moduleUriResolverRuby_ruby, "@shadow");
 
 	ZR_REAL (ModuleUriResolver, moduleUriResolverZorba);
 
@@ -70,12 +70,12 @@ VALUE StaticContext_add_module_uri_resolver (VALUE self, VALUE moduleUriResolver
 	return Qnil;
 }
 
-VALUE StaticContext_register_module (VALUE self, VALUE module) {
+VALUE StaticContext_register_module (VALUE self_ruby, VALUE module_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
 	ExternalModuleWrapper * module_real =
-		new ExternalModuleWrapper (module);
+		new ExternalModuleWrapper (module_ruby);
 
 	self_real->zorba ()->registerModule (module_real);
 
