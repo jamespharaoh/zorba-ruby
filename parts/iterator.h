@@ -19,9 +19,28 @@
 
 #ifdef INTERFACE_PART
 
-void Iterator_mark (zorba::Iterator_t *);
-void Iterator_delete (zorba::Iterator_t *);
-VALUE Iterator_wrap (zorba::Iterator *);
+class Iterator {
+
+	zorba::Iterator_t self_zorba;
+
+	VALUE self_ruby;
+
+	Iterator () { }
+
+	~Iterator () { }
+
+public:
+
+	zorba::Iterator_t & zorba () { return self_zorba; }
+
+	VALUE ruby () { return self_ruby; }
+
+	static void mark (Iterator *);
+
+	static void del (Iterator *);
+
+	static Iterator * wrap (zorba::Iterator_t & iterator_zorba);
+};
 
 #endif
 #ifdef RUBY_PART
@@ -35,21 +54,26 @@ ZR_CLASS_METHOD (Iterator, open, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void Iterator_mark (zorba::Iterator_t * iterator) {
-	// do nothing
+void Iterator::mark (Iterator * iterator) {
 }
 
-void Iterator_delete (zorba::Iterator_t * iterator) {
+void Iterator::del (Iterator * iterator) {
 	delete iterator;
 }
 
-VALUE Iterator_wrap (zorba::Iterator_t * iterator) {
+Iterator * Iterator::wrap (zorba::Iterator_t & iterator_zorba) {
 
-	return Data_Wrap_Struct (
+	Iterator * iterator = new Iterator ();
+
+	iterator->self_zorba = iterator_zorba;
+
+	iterator->self_ruby = Data_Wrap_Struct (
 		cIterator,
-		Iterator_mark,
-		Iterator_delete,
+		Iterator::mark,
+		Iterator::del,
 		(void *) iterator);
+
+	return iterator;
 }
 
 VALUE Iterator_close (VALUE self_ruby) {

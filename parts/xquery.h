@@ -111,13 +111,11 @@ VALUE XQuery_iterator (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
-	auto_ptr <zorba::Iterator_t> iterator (new zorba::Iterator_t ());
+	zorba::Iterator_t iterator_zorba = (* self)->iterator ();
 
-	* iterator = (* self)->iterator ();
+	Iterator * iterator = Iterator::wrap (iterator_zorba);
 
-	VALUE iterator_ruby = Iterator_wrap (iterator.release ());
-
-	return iterator_ruby;
+	return iterator->ruby ();
 }
 
 VALUE XQuery_filename_eq (VALUE self_ruby, VALUE value_ruby) {
