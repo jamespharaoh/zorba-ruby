@@ -158,11 +158,11 @@ VALUE Zorba_shutdown (VALUE self_ruby) {
 
 VALUE Zorba_version (VALUE self_ruby) {
 
-	auto_ptr <zorba::Version> version (new zorba::Version ());
+	const zorba::Version * version_zorba = & zorba::Zorba::version ();
 
-	* version = zorba::Zorba::version ();
+	Version * version = new Version (version_zorba);
 
-	return Version_wrap (version.release ());
+	return version->ruby ();
 }
 
 VALUE Zorba_xml_data_manager (VALUE self_ruby) {

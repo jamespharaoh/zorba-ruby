@@ -19,9 +19,26 @@
 
 #ifdef INTERFACE_PART
 
-void Version_mark (zorba::Version *);
-void Version_delete (zorba::Version *);
-VALUE Version_wrap (zorba::Version *);
+class Version {
+
+	const zorba::Version * self_zorba;
+
+	VALUE self_ruby;
+
+	~Version () { }
+
+public:
+
+	Version (const zorba::Version *);
+
+	const zorba::Version * zorba () { return self_zorba; }
+
+	VALUE ruby () { return self_ruby; }
+
+	static void mark (Version *);
+
+	static void del (Version *);
+};
 
 #endif
 #ifdef RUBY_PART
@@ -37,20 +54,22 @@ ZR_CLASS_METHOD (Version, version, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void Version_mark (zorba::Version * version) {
-	// do nothing
-}
+Version::Version (const zorba::Version * version_zorba) {
 
-void Version_delete (zorba::Version * version) {
-	delete version;
-}
+	self_zorba = version_zorba;
 
-VALUE Version_wrap (zorba::Version * version) {
-	return Data_Wrap_Struct (
+	self_ruby = Data_Wrap_Struct (
 		cVersion,
-		Version_mark,
-		Version_delete,
-		(void *) version);
+		Version::mark,
+		Version::del,
+		this);
+}
+
+void Version::mark (Version * version) {
+}
+
+void Version::del (Version * version) {
+	delete version;
 }
 
 VALUE Version_major_version (VALUE self_ruby) {
