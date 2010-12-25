@@ -1,5 +1,5 @@
 /*
- * zorba-ruby/parts.h
+ * zorba-ruby/parts/store-manager.h
  *
  * Copyright 2010 James Pharaoh <james@phsys.co.uk>
  *
@@ -17,22 +17,23 @@
  *
  */
 
-#include "parts/zorba.h"
+#ifdef INTERFACE_PART
 
-#include "parts/compiler-hints.h"
-#include "parts/dynamic-context.h"
-#include "parts/external-module-wrapper.h"
-#include "parts/item.h"
-#include "parts/item-factory.h"
-#include "parts/iterator.h"
-#include "parts/module-uri-resolver.h"
-#include "parts/none-pure-stateless-external-function.h"
-#include "parts/singleton-item-sequence.h"
-#include "parts/static-context.h"
-#include "parts/store-manager.h"
-#include "parts/uri-resolver-result.h"
-#include "parts/version.h"
-#include "parts/xquery.h"
-#include "parts/zorba-exception.h"
+#endif
+#ifdef RUBY_PART
 
-#include "parts/module-uri-resolver-result.h"
+ZR_CLASS_MODULE (Zorba, StoreManager)
+
+ZR_MODULE_SINGLETON_METHOD (StoreManager, get_store, 0)
+
+#endif
+#ifdef IMPLEMENTATION_PART
+
+VALUE StoreManager_get_store (VALUE self_ruby) {
+
+	void *store_real = zorba::StoreManager::getStore ();
+
+	return Data_Wrap_Struct (cStore, 0, 0, store_real);
+}
+
+#endif
