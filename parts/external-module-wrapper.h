@@ -21,11 +21,14 @@
 
 class ExternalModuleWrapper : public zorba::ExternalModule {
 
+	Zorba * owner;
+
 	VALUE value;
 
 public:
 
-	ExternalModuleWrapper (VALUE value) {
+	ExternalModuleWrapper (Zorba * owner, VALUE value) {
+		this->owner = owner;
 		this->value = value;
 	}
 
@@ -55,7 +58,7 @@ zorba::StatelessExternalFunction * ExternalModuleWrapper::getExternalFunction (
 
 	ZR_REAL (StatelessExternalFunction, shadow);
 
-	return shadow->delegate ();
+	return shadow->delegate (owner);
 }
 
 zorba::String ExternalModuleWrapper::getURI () const {

@@ -21,6 +21,8 @@
 
 class StaticContext {
 
+	Zorba * owner;
+
 	zorba::StaticContext_t self_zorba;
 	VALUE self_ruby;
 
@@ -28,7 +30,7 @@ class StaticContext {
 
 public:
 
-	StaticContext (zorba::StaticContext_t);
+	StaticContext (Zorba * owner, zorba::StaticContext_t);
 
 	zorba::StaticContext * zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
@@ -55,7 +57,9 @@ ZR_CLASS_METHOD (StaticContext, register_module, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-StaticContext::StaticContext (zorba::StaticContext_t staticContext_zorba) {
+StaticContext::StaticContext (Zorba * owner, zorba::StaticContext_t staticContext_zorba) {
+
+	this->owner = owner;
 
 	self_zorba = staticContext_zorba;
 
@@ -98,7 +102,7 @@ VALUE StaticContext::register_module (VALUE self_ruby, VALUE module_ruby) {
 	ZR_REAL (StaticContext, self);
 
 	ExternalModuleWrapper * module =
-		new ExternalModuleWrapper (module_ruby);
+		new ExternalModuleWrapper (self->owner, module_ruby);
 
 	self->zorba ()->registerModule (module);
 

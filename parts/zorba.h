@@ -94,12 +94,12 @@ VALUE Zorba::compile_query (int argc, VALUE * argv, VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 	zorba::String query_string (StringValueCStr (query_ruby));
-	ZR_REAL_OPT (zorba::StaticContext_t, staticContext);
+	ZR_REAL_OPT (StaticContext, staticContext);
 
 	zorba::XQuery_t xquery_zorba;
 
 	if (staticContext) {
-		xquery_zorba = self->zorba ()->compileQuery (query_string, * staticContext);
+		xquery_zorba = self->zorba ()->compileQuery (query_string, staticContext->zorba ());
 	} else {
 		xquery_zorba = self->zorba ()->compileQuery (query_string);
 	}
@@ -128,7 +128,7 @@ VALUE Zorba::create_static_context (VALUE self_ruby) {
 
 	zorba::StaticContext_t staticContext_zorba = self->zorba ()->createStaticContext ();
 
-	StaticContext * staticContext = new StaticContext (staticContext_zorba);
+	StaticContext * staticContext = new StaticContext (self, staticContext_zorba);
 
 	return staticContext->ruby ();
 }

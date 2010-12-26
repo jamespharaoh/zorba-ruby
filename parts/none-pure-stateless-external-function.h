@@ -23,19 +23,22 @@ class StatelessExternalFunction {
 
 public:
 
-	virtual zorba::StatelessExternalFunction * delegate () = 0;
+	virtual zorba::StatelessExternalFunction * delegate (Zorba *) = 0;
 };
 
 class NonePureStatelessExternalFunction : public StatelessExternalFunction {
 
 	class Delegate : public zorba::NonePureStatelessExternalFunction {
 
+		Zorba * owner;
+
 		::NonePureStatelessExternalFunction * target;
 
 	public:
 
-		Delegate (::NonePureStatelessExternalFunction * target) :
-			target (target) {
+		Delegate (Zorba * owner, ::NonePureStatelessExternalFunction * target) {
+			this->owner = owner;
+			this->target = target;
 		}
 
 		virtual zorba::String getLocalName () const;
@@ -60,8 +63,8 @@ public:
 	VALUE caster () { return caster_ruby; }
 	VALUE shadow () { return shadow_ruby; }
 
-	virtual zorba::NonePureStatelessExternalFunction * delegate () {
-		return new Delegate (this);
+	virtual zorba::NonePureStatelessExternalFunction * delegate (Zorba * owner) {
+		return new Delegate (owner, this);
 	}
 
 	static VALUE initialize (VALUE self_ruby);
@@ -113,7 +116,9 @@ zorba::ItemSequence_t NonePureStatelessExternalFunction::Delegate::evaluate (
 		const zorba::DynamicContext * dynamicContext) const {
 
 	// TODO maintain constness in ruby
-	StaticContext * staticContext = new StaticContext ((zorba::StaticContext *) staticContext_zorba);
+	StaticContext * staticContext = new StaticContext (
+		owner,
+		(zorba::StaticContext *) staticContext_zorba);
 
 	VALUE itemSequence_ruby = zr_funcall (
 		target->caster (),
