@@ -21,12 +21,14 @@
 
 class XQuery {
 
+	Zorba * owner;
+
 	zorba::XQuery_t self_zorba;
 	VALUE self_ruby;
 
 public:
 
-	XQuery (zorba::XQuery_t & xquery);
+	XQuery (Zorba * owner, zorba::XQuery_t & xquery);
 
 	const zorba::XQuery_t & zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
@@ -59,7 +61,9 @@ ZR_CLASS_METHOD (XQuery, filename_eq, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-XQuery::XQuery (zorba::XQuery_t & xquery_zorba) {
+XQuery::XQuery (Zorba * owner, zorba::XQuery_t & xquery_zorba) {
+
+	this->owner = owner;
 
 	self_zorba = xquery_zorba;
 
@@ -68,40 +72,40 @@ XQuery::XQuery (zorba::XQuery_t & xquery_zorba) {
 
 VALUE XQuery::close (VALUE self_ruby) {
 
-	ZR_REAL (zorba::XQuery_t, self);
+	ZR_REAL (XQuery, self);
 
-	(* self)->close ();
+	self->zorba ()->close ();
 
 	return Qnil;
 }
 
 VALUE XQuery::clone (VALUE self_ruby) {
 
-	ZR_REAL (zorba::XQuery_t, self);
+	ZR_REAL (XQuery, self);
 
 	zorba::XQuery_t cloned_zorba;
 
-	cloned_zorba = (* self)->clone ();
+	cloned_zorba = self->zorba ()->clone ();
 
-	XQuery * cloned = new XQuery (cloned_zorba);
+	XQuery * cloned = new XQuery (self->owner, cloned_zorba);
 
 	return cloned->ruby ();
 }
 
 VALUE XQuery::compile (VALUE self_ruby, VALUE query_ruby) {
 
-	ZR_REAL (zorba::XQuery_t, self);
+	ZR_REAL (XQuery, self);
 
-	(* self)->compile (StringValueCStr (query_ruby));
+	self->zorba ()->compile (StringValueCStr (query_ruby));
 
 	return Qnil;
 }
 
 VALUE XQuery::dynamic_context (VALUE self_ruby) {
 
-	ZR_REAL (zorba::XQuery_t, self);
+	ZR_REAL (XQuery, self);
 
-	zorba::DynamicContext * dynamicContext_zorba = (* self)->getDynamicContext ();
+	zorba::DynamicContext * dynamicContext_zorba = self->zorba ()->getDynamicContext ();
 
 	DynamicContext * dynamicContext = new DynamicContext (dynamicContext_zorba);
 
@@ -110,31 +114,31 @@ VALUE XQuery::dynamic_context (VALUE self_ruby) {
 
 VALUE XQuery::execute (VALUE self_ruby) {
 
-	ZR_REAL (zorba::XQuery_t, self);
+	ZR_REAL (XQuery, self);
 
 	basic_ostringstream<char> out;
 
-	(*self)->execute (out);
+	self->zorba ()->execute (out);
 
 	return rb_str_new2 (out.str ().c_str ());
 }
 
 VALUE XQuery::iterator (VALUE self_ruby) {
 
-	ZR_REAL (zorba::XQuery_t, self);
+	ZR_REAL (XQuery, self);
 
-	zorba::Iterator_t iterator_zorba = (* self)->iterator ();
+	zorba::Iterator_t iterator_zorba = self->zorba ()->iterator ();
 
-	Iterator * iterator = new Iterator (iterator_zorba);
+	Iterator * iterator = new Iterator (self->owner, iterator_zorba);
 
 	return iterator->ruby ();
 }
 
 VALUE XQuery::filename_eq (VALUE self_ruby, VALUE value_ruby) {
 
-	ZR_REAL (zorba::XQuery_t, self);
+	ZR_REAL (XQuery, self);
 
-	(* self)->setFileName (StringValueCStr (value_ruby));
+	self->zorba ()->setFileName (StringValueCStr (value_ruby));
 
 	return Qnil;
 }

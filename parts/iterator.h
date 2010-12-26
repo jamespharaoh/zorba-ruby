@@ -21,6 +21,8 @@
 
 class Iterator {
 
+	Zorba * owner;
+
 	zorba::Iterator_t self_zorba;
 	VALUE self_ruby;
 
@@ -31,7 +33,7 @@ class Iterator {
 
 public:
 
-	Iterator (zorba::Iterator_t & iterator_zorba);
+	Iterator (Zorba * owner, zorba::Iterator_t & iterator_zorba);
 
 	zorba::Iterator_t & zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
@@ -60,7 +62,9 @@ void Iterator::del (Iterator * iterator) {
 	delete iterator;
 }
 
-Iterator::Iterator (zorba::Iterator_t & iterator_zorba) {
+Iterator::Iterator (Zorba * owner, zorba::Iterator_t & iterator_zorba) {
+
+	this->owner = owner;
 
 	self_zorba = iterator_zorba;
 
@@ -73,20 +77,20 @@ Iterator::Iterator (zorba::Iterator_t & iterator_zorba) {
 
 VALUE Iterator::close (VALUE self_ruby) {
 
-	ZR_REAL (zorba::Iterator_t, self);
+	ZR_REAL (Iterator, self);
 
-	(* self)->close ();
+	self->zorba ()->close ();
 
 	return Qnil;
 }
 
 VALUE Iterator::next (VALUE self_ruby) {
 
-	ZR_REAL (zorba::Iterator_t, self);
+	ZR_REAL (Iterator, self);
 
-	Item * item = new Item ();
+	Item * item = new Item (self->owner);
 
-	bool ret = (* self)->next (item->zorba ());
+	bool ret = self->zorba ()->next (item->zorba ());
 	if (! ret) return Qnil;
 
 	return item->ruby ();
@@ -94,9 +98,9 @@ VALUE Iterator::next (VALUE self_ruby) {
 
 VALUE Iterator::open (VALUE self_ruby) {
 
-	ZR_REAL (zorba::Iterator_t, self);
+	ZR_REAL (Iterator, self);
 
-	(* self)->open ();
+	self->zorba ()->open ();
 
 	return Qnil;
 }

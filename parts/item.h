@@ -21,14 +21,16 @@
 
 class Item {
 
+	Zorba * owner;
+
 	zorba::Item self_zorba;
 	VALUE self_ruby;
 
-	~Item () { }
+	~Item ();
 
 public:
 
-	Item ();
+	Item (Zorba * owner);
 
 	zorba::Item & zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
@@ -49,12 +51,18 @@ ZR_CLASS_METHOD (Item, string_value, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-Item::Item () {
+Item::Item (Zorba * owner) {
+
+	this->owner = owner;
+
 	self_ruby = Data_Wrap_Struct (
 		cItem,
 		Item::mark,
 		Item::del,
 		this);
+}
+
+Item::~Item () {
 }
 
 void Item::mark (Item * item) {

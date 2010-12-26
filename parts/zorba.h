@@ -104,7 +104,7 @@ VALUE Zorba::compile_query (int argc, VALUE * argv, VALUE self_ruby) {
 		xquery_zorba = self->zorba ()->compileQuery (query_string);
 	}
 
-	XQuery * xquery = new XQuery (xquery_zorba);
+	XQuery * xquery = new XQuery (self, xquery_zorba);
 
 	return xquery->ruby ();
 }
@@ -117,7 +117,7 @@ VALUE Zorba::create_query (VALUE self_ruby) {
 
 	xquery_zorba = self->zorba ()->createQuery ();
 
-	XQuery * xquery = new XQuery (xquery_zorba);
+	XQuery * xquery = new XQuery (self, xquery_zorba);
 
 	return xquery->ruby ();
 }
@@ -150,7 +150,7 @@ VALUE Zorba::item_factory (VALUE self_ruby) {
 
 	zorba::ItemFactory * itemFactory_zorba = self->zorba ()->getItemFactory ();
 
-	ItemFactory * itemFactory = new ItemFactory (itemFactory_zorba);
+	ItemFactory * itemFactory = new ItemFactory (self, itemFactory_zorba);
 
 	return itemFactory->ruby ();
 }
