@@ -73,6 +73,11 @@ const char * zr_map_method_name (const char * name) {
 	pointer = (char *) malloc (len + 1);
 	strcpy (pointer, name);
 
+	if (strcmp (name, "new_new") == 0) {
+		pointer [3] = 0;
+		return pointer;
+	}
+
 	if (len > 3 && strcmp (name + len - 3, "_eq") == 0) {
 		pointer [len - 3] = '=';
 		pointer [len - 2] = 0;
@@ -213,7 +218,7 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 #define ZR_CLASS_METHOD(klass, name, args) \
 	VALUE klass##_##name##_wrap (int argc, VALUE *argv, VALUE self) { \
 		try { \
-			ZR_WRAP_INVOKE_##args (klass##_##name, self, argc, argv); \
+			ZR_WRAP_INVOKE_##args (klass::name, self, argc, argv); \
 		} \
 		catch (zorba::ZorbaException & e) { zr_raise (e); } \
 		catch (RubyException & e) { zr_raise (e); } \
@@ -222,7 +227,7 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 #define ZR_CLASS_SINGLETON_METHOD(klass, name, args) \
 	VALUE klass##_##name##_wrap (int argc, VALUE *argv, VALUE self) { \
 		try { \
-			ZR_WRAP_INVOKE_##args (klass##_##name, self, argc, argv); \
+			ZR_WRAP_INVOKE_##args (klass::name, self, argc, argv); \
 		} \
 		catch (zorba::ZorbaException & e) { zr_raise (e); } \
 		catch (RubyException & e) { zr_raise (e); } \
@@ -231,7 +236,7 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 #define ZR_MODULE_SINGLETON_METHOD(module, name, args) \
 	VALUE module##_##name##_wrap (int argc, VALUE *argv, VALUE self) { \
 		try { \
-			ZR_WRAP_INVOKE_##args (module##_##name, self, argc, argv); \
+			ZR_WRAP_INVOKE_##args (module::name, self, argc, argv); \
 		} \
 		catch (zorba::ZorbaException & e) { zr_raise (e); } \
 		catch (RubyException & e) { zr_raise (e); } \

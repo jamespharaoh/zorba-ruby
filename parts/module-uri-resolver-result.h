@@ -19,13 +19,13 @@
 
 #ifdef INTERFACE_PART
 
-class ModuleUriResolverResultWrapper : public zorba::ModuleURIResolverResult {
+class ModuleUriResolverResult : public zorba::ModuleURIResolverResult {
 
 public:
 
 	VALUE shadow;
 
-	ModuleUriResolverResultWrapper (VALUE shadow) {
+	ModuleUriResolverResult (VALUE shadow) {
 		this->shadow = shadow;
 	}
 
@@ -64,6 +64,8 @@ public:
 			componentUris.push_back (StringValueCStr (item));
 		}
 	}
+
+	static VALUE initialize (VALUE self);
 };
 
 #endif
@@ -76,9 +78,9 @@ ZR_CLASS_METHOD (ModuleUriResolverResult, initialize, 0);
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE ModuleUriResolverResult_initialize (VALUE self) {
+VALUE ModuleUriResolverResult::initialize (VALUE self) {
 
-	ModuleUriResolverResultWrapper* shadow_real = new ModuleUriResolverResultWrapper (self);
+	ModuleUriResolverResult* shadow_real = new ModuleUriResolverResult (self);
 	VALUE shadow = Data_Wrap_Struct (cModuleUriResolverResult, 0, 0/* TODO? */, shadow_real);
 
 	rb_iv_set (self, "@shadow", shadow);

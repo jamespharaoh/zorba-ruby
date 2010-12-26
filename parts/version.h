@@ -22,7 +22,6 @@
 class Version {
 
 	const zorba::Version * self_zorba;
-
 	VALUE self_ruby;
 
 	~Version () { }
@@ -32,11 +31,15 @@ public:
 	Version (const zorba::Version *);
 
 	const zorba::Version * zorba () { return self_zorba; }
-
 	VALUE ruby () { return self_ruby; }
 
-	static void mark (Version *);
+	static VALUE major_version (VALUE self_ruby);
+	static VALUE minor_version (VALUE self_ruby);
+	static VALUE patch_version (VALUE self_ruby);
+	static VALUE to_s (VALUE self_ruby);
+	static VALUE version (VALUE self_ruby);
 
+	static void mark (Version *);
 	static void del (Version *);
 };
 
@@ -72,27 +75,27 @@ void Version::del (Version * version) {
 	delete version;
 }
 
-VALUE Version_major_version (VALUE self_ruby) {
+VALUE Version::major_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return INT2NUM (self->getMajorVersion ());
 }
 
-VALUE Version_minor_version (VALUE self_ruby) {
+VALUE Version::minor_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return INT2NUM (self->getMajorVersion ());
 }
 
-VALUE Version_patch_version (VALUE self_ruby) {
+VALUE Version::patch_version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return INT2NUM (self->getMajorVersion ());
 }
 
-VALUE Version_to_s (VALUE self_ruby) {
+VALUE Version::to_s (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return rb_str_new2 (self->getVersion ().c_str ());
 }
 
-VALUE Version_version (VALUE self_ruby) {
+VALUE Version::version (VALUE self_ruby) {
 	ZR_REAL (zorba::Version, self);
 	return rb_str_new2 (self->getVersion ().c_str ());
 }

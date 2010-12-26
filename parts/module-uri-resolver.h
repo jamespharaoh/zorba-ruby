@@ -22,14 +22,12 @@
 class ModuleUriResolver : public zorba::ModuleURIResolver {
 
 	VALUE self_ruby;
-
 	VALUE shadow_ruby;
 
-	ModuleUriResolver () { }
+	ModuleUriResolver (VALUE);
+	~ModuleUriResolver () { }
 
 public:
-
-	~ModuleUriResolver () { }
 
 	VALUE ruby () { return self_ruby; }
 
@@ -43,11 +41,10 @@ public:
 		const zorba::String& uri,
 		const zorba::StaticContext& staticContext);
 
+	static VALUE initialize (VALUE self);
+
 	static void mark (ModuleUriResolver *);
-
 	static void del (ModuleUriResolver *);
-
-	static ModuleUriResolver * initialize (VALUE self);
 };
 
 #endif
@@ -60,9 +57,20 @@ ZR_CLASS_METHOD (ModuleUriResolver, initialize, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE ModuleUriResolver_initialize (VALUE self_ruby) {
+ModuleUriResolver::ModuleUriResolver (VALUE shadow_ruby) {
 
-	ModuleUriResolver * selfZorba = ModuleUriResolver::initialize (self_ruby);
+	this->shadow_ruby = shadow_ruby;
+
+	self_ruby = Data_Wrap_Struct (
+		cModuleUriResolver,
+		ModuleUriResolver::mark,
+		ModuleUriResolver::del,
+		this);
+}
+
+VALUE ModuleUriResolver::initialize (VALUE self_ruby) {
+
+	ModuleUriResolver * selfZorba = new ModuleUriResolver (self_ruby);
 
 	rb_iv_set (self_ruby, "@shadow", selfZorba->ruby ());
 
@@ -106,23 +114,6 @@ void ModuleUriResolver::del (ModuleUriResolver * moduleUriResolver) {
 }
 
 void ModuleUriResolver::mark (ModuleUriResolver * moduleUriResolver) {
-}
-
-ModuleUriResolver * ModuleUriResolver::initialize (VALUE shadow_ruby) {
-
-	ModuleUriResolver * moduleUriResolver = new ModuleUriResolver ();
-
-	moduleUriResolver->shadow_ruby = shadow_ruby;
-
-	VALUE moduleUriResolver_ruby = Data_Wrap_Struct (
-		cModuleUriResolver,
-		ModuleUriResolver::mark,
-		ModuleUriResolver::del,
-		moduleUriResolver);
-
-	moduleUriResolver->self_ruby = moduleUriResolver_ruby;
-
-	return moduleUriResolver;
 }
 
 #endif

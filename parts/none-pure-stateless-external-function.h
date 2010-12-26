@@ -19,29 +19,55 @@
 
 #ifdef INTERFACE_PART
 
-class NonePureStatelessExternalFunctionWrapper : public zorba::NonePureStatelessExternalFunction {
-
-	VALUE shadow;
+class StatelessExternalFunction {
 
 public:
 
-	NonePureStatelessExternalFunctionWrapper (VALUE shadow) {
-		this->shadow = shadow;
-	}
+	virtual zorba::StatelessExternalFunction & delegate () = 0;
+};
 
-	virtual ~NonePureStatelessExternalFunctionWrapper () {
-		cout << "TODO ~NonePureStatelessExternalFunctionWrapper\n";
-		exit (0);
-	}
+class NonePureStatelessExternalFunction : public StatelessExternalFunction {
 
-	virtual zorba::String getLocalName () const;
+	class Delegate : public zorba::NonePureStatelessExternalFunction {
 
-	virtual zorba::String getURI () const;
+		::NonePureStatelessExternalFunction * target;
 
-	virtual zorba::ItemSequence_t evaluate (
-		const Arguments_t &,
-		const zorba::StaticContext *,
-		const zorba::DynamicContext *) const;
+	public:
+
+		Delegate (::NonePureStatelessExternalFunction * target) :
+			target (target) {
+		}
+
+		virtual zorba::String getLocalName () const;
+
+		virtual zorba::String getURI () const;
+
+		virtual zorba::ItemSequence_t evaluate (
+			const Arguments_t &,
+			const zorba::StaticContext *,
+			const zorba::DynamicContext *) const;
+	};
+
+	VALUE caster_ruby;
+	VALUE shadow_ruby;
+
+	Delegate delegate_val;
+
+	~NonePureStatelessExternalFunction () { }
+
+public:
+
+	NonePureStatelessExternalFunction (VALUE caster_ruby);
+
+	VALUE caster () { return caster_ruby; }
+	VALUE shadow () { return shadow_ruby; }
+
+	virtual zorba::NonePureStatelessExternalFunction & delegate () { return delegate_val; }
+
+	static VALUE initialize (VALUE self_ruby);
+
+	static void mark (NonePureStatelessExternalFunction *);
+	static void del (NonePureStatelessExternalFunction *);
 };
 
 #endif
@@ -54,43 +80,44 @@ ZR_CLASS_METHOD (NonePureStatelessExternalFunction, initialize, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE NonePureStatelessExternalFunction_initialize (VALUE self_ruby) {
+NonePureStatelessExternalFunction::NonePureStatelessExternalFunction (VALUE caster_ruby) :
+	delegate_val (this) {
 
-	NonePureStatelessExternalFunctionWrapper* shadow =
-		new NonePureStatelessExternalFunctionWrapper (self_ruby);
+	this->caster_ruby = caster_ruby;
 
-	VALUE shadow_ruby = Data_Wrap_Struct (
-		cNonePureStatelessExternalFunction,
-		0,
-		0, /* TODO? */
-		shadow);
+	shadow_ruby = Data_Wrap_Struct (cNonePureStatelessExternalFunction, mark, del, this);
+}
 
-	rb_iv_set (self_ruby, "@shadow", shadow_ruby);
+VALUE NonePureStatelessExternalFunction::initialize (VALUE self_ruby) {
+
+	NonePureStatelessExternalFunction * self =
+		new NonePureStatelessExternalFunction (self_ruby);
+
+	rb_iv_set (self_ruby, "@shadow", self->shadow ());
 
 	return self_ruby;
 }
 
-zorba::String NonePureStatelessExternalFunctionWrapper::getLocalName () const {
+zorba::String NonePureStatelessExternalFunction::Delegate::getLocalName () const {
 	cout << "w0\n";
 	exit (0);
 }
 
-zorba::String NonePureStatelessExternalFunctionWrapper::getURI () const {
+zorba::String NonePureStatelessExternalFunction::Delegate::getURI () const {
 	cout << "w1\n";
 	exit (0);
 }
 
-zorba::ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
+zorba::ItemSequence_t NonePureStatelessExternalFunction::Delegate::evaluate (
 		const Arguments_t & arguments,
 		const zorba::StaticContext * staticContext_zorba,
 		const zorba::DynamicContext * dynamicContext) const {
 
 	// TODO maintain constness in ruby
-	StaticContext * staticContext = StaticContext::wrap (
-		(zorba::StaticContext *) staticContext_zorba);
+	StaticContext * staticContext = new StaticContext ((zorba::StaticContext *) staticContext_zorba);
 
 	VALUE itemSequence_ruby = zr_funcall (
-		shadow,
+		target->caster (),
 		rb_intern ("evaluate"),
 		3,
 		Qnil,
@@ -100,6 +127,13 @@ zorba::ItemSequence_t NonePureStatelessExternalFunctionWrapper::evaluate (
 	ZR_REAL (zorba::ItemSequence_t, itemSequence);
 
 	return * itemSequence;
+}
+
+void NonePureStatelessExternalFunction::mark (NonePureStatelessExternalFunction * nonePureStatelessExternalFunction) {
+}
+
+void NonePureStatelessExternalFunction::del (NonePureStatelessExternalFunction * nonePureStatelessExternalFunction) {
+	delete nonePureStatelessExternalFunction;
 }
 
 #endif

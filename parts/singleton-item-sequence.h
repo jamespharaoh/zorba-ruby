@@ -36,8 +36,14 @@ public:
 	VALUE ruby () { return self_ruby; }
 
 	static void mark (ItemSequence *);
-
 	static void del (ItemSequence *);
+};
+
+class SingletonItemSequence : public ItemSequence {
+
+public:
+
+	static VALUE new_new (VALUE self_ruby, VALUE item_ruby);
 };
 
 #endif
@@ -45,7 +51,7 @@ public:
 
 ZR_CLASS_CLASS (Zorba, SingletonItemSequence, rb_cObject)
 
-ZR_CLASS_SINGLETON_METHOD (SingletonItemSequence, new, 1);
+ZR_CLASS_SINGLETON_METHOD (SingletonItemSequence, new_new, 1);
 
 #endif
 #ifdef IMPLEMENTATION_PART
@@ -57,7 +63,7 @@ ItemSequence::ItemSequence (VALUE klass, zorba::ItemSequence * itemSequence_zorb
 	self_ruby = Data_Wrap_Struct (klass, mark, del, this);
 }
 
-VALUE SingletonItemSequence_new (VALUE self_ruby, VALUE item_ruby) {
+VALUE SingletonItemSequence::new_new (VALUE self_ruby, VALUE item_ruby) {
 
 	ZR_REAL (Item, item);
 

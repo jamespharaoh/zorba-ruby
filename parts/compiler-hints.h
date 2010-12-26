@@ -27,11 +27,11 @@ class CompilerHints {
 
 	VALUE caster_ruby;
 
-	CompilerHints () { }
-
-public:
+	CompilerHints (VALUE compilerHints_ruby);
 
 	~CompilerHints () { }
+
+public:
 
 	Zorba_CompilerHints_t & zorba () { return self_zorba; }
 
@@ -43,7 +43,7 @@ public:
 
 	static void del (CompilerHints *);
 
-	static CompilerHints * initialize (VALUE self);
+	static VALUE initialize (VALUE self);
 };
 
 #endif
@@ -56,9 +56,20 @@ ZR_CLASS_METHOD (CompilerHints, initialize, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE CompilerHints_initialize (VALUE self_ruby) {
+CompilerHints::CompilerHints (VALUE compilerHints_ruby) {
 
-	CompilerHints * shadow = CompilerHints::initialize (self_ruby);
+	caster_ruby = compilerHints_ruby;
+
+	shadow_ruby = Data_Wrap_Struct (
+		cCompilerHints,
+		CompilerHints::mark,
+		CompilerHints::del,
+		this);
+}
+
+VALUE CompilerHints::initialize (VALUE self_ruby) {
+
+	CompilerHints * shadow = new CompilerHints (self_ruby);
 
 	rb_iv_set (self_ruby, "@shadow", shadow->shadow ());
 
@@ -70,21 +81,6 @@ void CompilerHints::del (CompilerHints * compilerHints) {
 }
 
 void CompilerHints::mark (CompilerHints * compilerHints) {
-}
-
-CompilerHints * CompilerHints::initialize (VALUE caster_ruby) {
-
-	CompilerHints * compilerHints = new CompilerHints ();
-
-	compilerHints->caster_ruby = caster_ruby;
-
-	compilerHints->shadow_ruby = Data_Wrap_Struct (
-		cCompilerHints,
-		CompilerHints::mark,
-		CompilerHints::del,
-		compilerHints);
-
-	return compilerHints;
 }
 
 #endif

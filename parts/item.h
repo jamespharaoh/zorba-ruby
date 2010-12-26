@@ -22,7 +22,6 @@
 class Item {
 
 	zorba::Item self_zorba;
-
 	VALUE self_ruby;
 
 	~Item () { }
@@ -32,11 +31,11 @@ public:
 	Item ();
 
 	zorba::Item & zorba () { return self_zorba; }
-
 	VALUE ruby () { return self_ruby; }
 
-	static void mark (Item *);
+	static VALUE string_value (VALUE self_ruby);
 
+	static void mark (Item *);
 	static void del (Item *);
 };
 
@@ -66,7 +65,7 @@ void Item::del (Item * item) {
 	delete item;
 }
 
-VALUE Item_string_value (VALUE self_ruby) {
+VALUE Item::string_value (VALUE self_ruby) {
 
 	ZR_REAL (Item, self);
 

@@ -21,27 +21,25 @@
 
 class StaticContext {
 
-	static map <zorba::StaticContext_t, StaticContext *> instances;
+	zorba::StaticContext_t self_zorba;
+	VALUE self_ruby;
 
-	zorba::StaticContext_t zorbaValue;
-
-	VALUE rubyValue;
-
-	StaticContext () { }
+	~StaticContext () { }
 
 public:
 
-	~StaticContext ();
+	StaticContext (zorba::StaticContext_t);
 
-	zorba::StaticContext * zorba () { return zorbaValue; }
+	zorba::StaticContext * zorba () { return self_zorba; }
+	VALUE ruby () { return self_ruby; }
 
-	VALUE ruby () { return rubyValue; }
+	static VALUE add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby);
+	static VALUE free (VALUE self_ruby);
+	static VALUE load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hints_ruby);
+	static VALUE register_module (VALUE self_ruby, VALUE module_ruby);
 
 	static void mark (StaticContext *);
-
 	static void del (StaticContext *);
-
-	static StaticContext * wrap (zorba::StaticContext_t);
 };
 
 #endif
@@ -57,9 +55,14 @@ ZR_CLASS_METHOD (StaticContext, register_module, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-map <zorba::StaticContext_t, StaticContext *> StaticContext::instances;
+StaticContext::StaticContext (zorba::StaticContext_t staticContext_zorba) {
 
-VALUE StaticContext_add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby) {
+	self_zorba = staticContext_zorba;
+
+	self_ruby = Data_Wrap_Struct (cStaticContext, mark, del, this);
+}
+
+VALUE StaticContext::add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
@@ -72,7 +75,7 @@ VALUE StaticContext_add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriRes
 	return Qnil;
 }
 
-VALUE StaticContext_free (VALUE self_ruby) {
+VALUE StaticContext::free (VALUE self_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
@@ -81,7 +84,7 @@ VALUE StaticContext_free (VALUE self_ruby) {
 	return Qnil;
 }
 
-VALUE StaticContext_load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hints_ruby) {
+VALUE StaticContext::load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hints_ruby) {
 
 	ZR_REAL (StaticContext, self);
 	const char * prolog = StringValueCStr (prolog_ruby);
@@ -90,7 +93,7 @@ VALUE StaticContext_load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hints
 	self->zorba ()->loadProlog (zorba::String (prolog), hints->zorba ());
 }
 
-VALUE StaticContext_register_module (VALUE self_ruby, VALUE module_ruby) {
+VALUE StaticContext::register_module (VALUE self_ruby, VALUE module_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
@@ -108,26 +111,6 @@ void StaticContext::del (StaticContext * staticContext) {
 }
 
 void StaticContext::mark (StaticContext * staticContext) {
-}
-
-StaticContext * StaticContext::wrap (zorba::StaticContext_t staticContext_zorba) {
-
-	if (instances.count (staticContext_zorba))
-		return instances [staticContext_zorba];
-
-	StaticContext * staticContext = new StaticContext ();
-
-	staticContext->zorbaValue = staticContext_zorba;
-
-	staticContext->rubyValue = Data_Wrap_Struct (
-		cStaticContext,
-		StaticContext::mark,
-		StaticContext::wrap,
-		staticContext);
-
-	instances [staticContext_zorba] = staticContext;
-
-	return staticContext;
 }
 
 #endif

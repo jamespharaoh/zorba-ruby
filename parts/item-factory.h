@@ -22,26 +22,26 @@
 class ItemFactory {
 
 	zorba::ItemFactory * self_zorba;
-
 	VALUE self_ruby;
 
 	set <Item *> items;
 
-	ItemFactory () { }
-
 	~ItemFactory () { }
 
 	static void mark (ItemFactory *);
-
 	static void del (ItemFactory *);
 
 public:
 
-	zorba::ItemFactory * zorba () { return self_zorba; }
+	ItemFactory (zorba::ItemFactory *);
 
+	zorba::ItemFactory * zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
 
-	static ItemFactory * wrap (zorba::ItemFactory *);
+	static VALUE create_element_node (VALUE, VALUE, VALUE, VALUE, VALUE, VALUE, VALUE);
+	static VALUE create_integer (VALUE self_ruby, VALUE integer_ruby);
+	static VALUE create_qname (VALUE self_ruby, VALUE ns_ruby, VALUE localName_ruby);
+	static VALUE create_string (VALUE self_ruby, VALUE str_ruby);
 };
 
 #endif
@@ -65,22 +65,18 @@ void ItemFactory::del (ItemFactory * itemFactory) {
 	delete itemFactory;
 }
 
-ItemFactory * ItemFactory::wrap (zorba::ItemFactory * itemFactory_zorba) {
+ItemFactory::ItemFactory (zorba::ItemFactory * itemFactory_zorba) {
 
-	ItemFactory * itemFactory = new ItemFactory ();
+	self_zorba = itemFactory_zorba;
 
-	itemFactory->self_zorba = itemFactory_zorba;
-
-	itemFactory->self_ruby = Data_Wrap_Struct (
+	self_ruby = Data_Wrap_Struct (
 		cItemFactory,
 		ItemFactory::mark,
 		ItemFactory::del,
-		itemFactory);
-
-	return itemFactory;
+		this);
 }
 
-VALUE ItemFactory_create_element_node (
+VALUE ItemFactory::create_element_node (
 		VALUE self_ruby,
 		VALUE parent_ruby,
 		VALUE nodeName_ruby,
@@ -109,7 +105,7 @@ VALUE ItemFactory_create_element_node (
 	return item->ruby ();
 }
 
-VALUE ItemFactory_create_integer (VALUE self_ruby, VALUE integer_ruby) {
+VALUE ItemFactory::create_integer (VALUE self_ruby, VALUE integer_ruby) {
 
 	ZR_REAL (ItemFactory, self);
 
@@ -120,7 +116,7 @@ VALUE ItemFactory_create_integer (VALUE self_ruby, VALUE integer_ruby) {
 	return item->ruby ();
 }
 
-VALUE ItemFactory_create_qname (VALUE self_ruby, VALUE ns_ruby, VALUE localName_ruby) {
+VALUE ItemFactory::create_qname (VALUE self_ruby, VALUE ns_ruby, VALUE localName_ruby) {
 
 	ZR_REAL (ItemFactory, self);
 
@@ -131,7 +127,7 @@ VALUE ItemFactory_create_qname (VALUE self_ruby, VALUE ns_ruby, VALUE localName_
 	return item->ruby ();
 }
 
-VALUE ItemFactory_create_string (VALUE self_ruby, VALUE str_ruby) {
+VALUE ItemFactory::create_string (VALUE self_ruby, VALUE str_ruby) {
 
 	ZR_REAL (ItemFactory, self);
 

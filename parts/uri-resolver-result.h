@@ -19,6 +19,13 @@
 
 #ifdef INTERFACE_PART
 
+class UriResolverResult {
+
+public:
+
+	static VALUE error_eq (VALUE self_ruby, VALUE error_ruby);
+};
+
 #endif
 #ifdef RUBY_PART
 
@@ -41,7 +48,7 @@ ZR_CLASS_CONST (UriResolverResult, UR_XQST0088, INT2NUM (zorba::URIResolverResul
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE UriResolverResult_error_eq (VALUE self_ruby, VALUE error_ruby) {
+VALUE UriResolverResult::error_eq (VALUE self_ruby, VALUE error_ruby) {
 
 	VALUE shadow_ruby = rb_iv_get (self_ruby, "@shadow");
 	ZR_REAL (zorba::URIResolverResult, shadow);

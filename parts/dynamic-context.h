@@ -21,27 +21,22 @@
 
 class DynamicContext {
 
-	static map <zorba::DynamicContext *, DynamicContext *> instances;
-
-	zorba::DynamicContext * zorbaValue;
-
-	VALUE rubyValue;
-
-	DynamicContext () { }
-
-public:
+	zorba::DynamicContext * self_zorba;
+	VALUE self_ruby;
 
 	~DynamicContext ();
 
-	zorba::DynamicContext * zorba () { return zorbaValue; }
+public:
 
-	VALUE ruby () { return rubyValue; }
+	DynamicContext (zorba::DynamicContext *);
+
+	zorba::DynamicContext * zorba () { return self_zorba; }
+	VALUE ruby () { return self_ruby; }
+
+	static VALUE set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE item_ruby);
 
 	static void mark (DynamicContext *);
-
 	static void del (DynamicContext *);
-
-	static DynamicContext * wrap (zorba::DynamicContext *);
 };
 
 #endif
@@ -54,9 +49,18 @@ ZR_CLASS_METHOD (DynamicContext, set_variable, 2)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-map <zorba::DynamicContext *, DynamicContext *> DynamicContext::instances;
+DynamicContext::DynamicContext (zorba::DynamicContext * dynamicContext_zorba) {
 
-VALUE DynamicContext_set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE item_ruby) {
+	self_zorba = dynamicContext_zorba;
+
+	self_ruby = Data_Wrap_Struct (
+		cDynamicContext,
+		DynamicContext::mark,
+		DynamicContext::del,
+		this);
+}
+
+VALUE DynamicContext::set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE item_ruby) {
 
 	ZR_REAL (DynamicContext, self);
 	ZR_REAL (zorba::Item, item);
@@ -73,26 +77,6 @@ void DynamicContext::del (DynamicContext * dynamicContext) {
 }
 
 void DynamicContext::mark (DynamicContext * dynamicContext) {
-}
-
-DynamicContext * DynamicContext::wrap (zorba::DynamicContext * dynamicContext_zorba) {
-
-	if (instances.count (dynamicContext_zorba))
-		return instances [dynamicContext_zorba];
-
-	DynamicContext * dynamicContext = new DynamicContext ();
-
-	dynamicContext->zorbaValue = dynamicContext_zorba;
-
-	dynamicContext->rubyValue = Data_Wrap_Struct (
-		cDynamicContext,
-		DynamicContext::mark,
-		DynamicContext::wrap,
-		dynamicContext);
-
-	instances [dynamicContext_zorba] = dynamicContext;
-
-	return dynamicContext;
 }
 
 #endif

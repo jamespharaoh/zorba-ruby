@@ -19,9 +19,29 @@
 
 #ifdef INTERFACE_PART
 
-void XQuery_delete (zorba::XQuery_t *);
-void XQuery_mark (zorba::XQuery_t *);
-VALUE XQuery_wrap (zorba::XQuery_t *);
+class XQuery {
+
+	zorba::XQuery_t self_zorba;
+	VALUE self_ruby;
+
+public:
+
+	XQuery (zorba::XQuery_t & xquery);
+
+	const zorba::XQuery_t & zorba () { return self_zorba; }
+	VALUE ruby () { return self_ruby; }
+
+	static VALUE close (VALUE self_ruby);
+	static VALUE clone (VALUE self_ruby);
+	static VALUE compile (VALUE self_ruby, VALUE query_ruby);
+	static VALUE dynamic_context (VALUE self_ruby);
+	static VALUE execute (VALUE self_ruby);
+	static VALUE iterator (VALUE self_ruby);
+	static VALUE filename_eq (VALUE self_ruby, VALUE value_ruby);
+
+	static void mark (XQuery * xquery);
+	static void del (XQuery * xquery);
+};
 
 #endif
 #ifdef RUBY_PART
@@ -39,7 +59,14 @@ ZR_CLASS_METHOD (XQuery, filename_eq, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE XQuery_close (VALUE self_ruby) {
+XQuery::XQuery (zorba::XQuery_t & xquery_zorba) {
+
+	self_zorba = xquery_zorba;
+
+	self_ruby = Data_Wrap_Struct (cXQuery, mark, del, this);
+}
+
+VALUE XQuery::close (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
@@ -48,35 +75,20 @@ VALUE XQuery_close (VALUE self_ruby) {
 	return Qnil;
 }
 
-void XQuery_delete (zorba::XQuery_t * xquery) {
-	delete xquery;
-}
-
-void XQuery_mark (zorba::XQuery_t * xquery) {
-	// do nothing
-}
-
-VALUE XQuery_wrap (zorba::XQuery_t * xquery) {
-
-	return Data_Wrap_Struct (
-		cXQuery,
-		XQuery_mark,
-		XQuery_delete,
-		(void *) xquery);
-}
-
-VALUE XQuery_clone (VALUE self_ruby) {
+VALUE XQuery::clone (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
-	zorba::XQuery_t * cloned = new zorba::XQuery_t ();
+	zorba::XQuery_t cloned_zorba;
 
-	* cloned = (* self)->clone ();
+	cloned_zorba = (* self)->clone ();
 
-	return XQuery_wrap (cloned);
+	XQuery * cloned = new XQuery (cloned_zorba);
+
+	return cloned->ruby ();
 }
 
-VALUE XQuery_compile (VALUE self_ruby, VALUE query_ruby) {
+VALUE XQuery::compile (VALUE self_ruby, VALUE query_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
@@ -85,18 +97,18 @@ VALUE XQuery_compile (VALUE self_ruby, VALUE query_ruby) {
 	return Qnil;
 }
 
-VALUE XQuery_dynamic_context (VALUE self_ruby) {
+VALUE XQuery::dynamic_context (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
 	zorba::DynamicContext * dynamicContext_zorba = (* self)->getDynamicContext ();
 
-	DynamicContext * dynamicContext = DynamicContext::wrap (dynamicContext_zorba);
+	DynamicContext * dynamicContext = new DynamicContext (dynamicContext_zorba);
 
 	return dynamicContext->ruby ();
 }
 
-VALUE XQuery_execute (VALUE self_ruby) {
+VALUE XQuery::execute (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
@@ -107,24 +119,31 @@ VALUE XQuery_execute (VALUE self_ruby) {
 	return rb_str_new2 (out.str ().c_str ());
 }
 
-VALUE XQuery_iterator (VALUE self_ruby) {
+VALUE XQuery::iterator (VALUE self_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
 	zorba::Iterator_t iterator_zorba = (* self)->iterator ();
 
-	Iterator * iterator = Iterator::wrap (iterator_zorba);
+	Iterator * iterator = new Iterator (iterator_zorba);
 
 	return iterator->ruby ();
 }
 
-VALUE XQuery_filename_eq (VALUE self_ruby, VALUE value_ruby) {
+VALUE XQuery::filename_eq (VALUE self_ruby, VALUE value_ruby) {
 
 	ZR_REAL (zorba::XQuery_t, self);
 
 	(* self)->setFileName (StringValueCStr (value_ruby));
 
 	return Qnil;
+}
+
+void XQuery::mark (XQuery * xquery) {
+}
+
+void XQuery::del (XQuery * xquery) {
+	delete xquery;
 }
 
 #endif

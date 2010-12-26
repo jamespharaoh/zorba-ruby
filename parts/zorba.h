@@ -22,23 +22,28 @@
 class Zorba {
 
 	zorba::Zorba * self_zorba;
-
 	VALUE self_ruby;
 
-	Zorba () { }
+	Zorba (zorba::Zorba * zorba_zorba);
+	~Zorba () { }
 
 public:
 
-	~Zorba () { }
-
 	zorba::Zorba * zorba () { return self_zorba; }
-
 	VALUE ruby () { return self_ruby; }
+
+	static VALUE compile_query (int argc, VALUE * argv, VALUE self_ruby);
+	static VALUE create_query (VALUE self_ruby);
+	static VALUE create_static_context (VALUE self_ruby);
+	static VALUE get_instance (VALUE self_ruby, VALUE store_ruby);
+	static VALUE item_factory (VALUE self_ruby);
+	static VALUE shutdown (VALUE self_ruby);
+	static VALUE version (VALUE self_ruby);
+	static VALUE xml_data_manager (VALUE self_ruby);
 
 	static Zorba * get_instance (void * store);
 
 	static void mark (Zorba *);
-
 	static void del (Zorba *);
 };
 
@@ -60,7 +65,18 @@ ZR_CLASS_METHOD (Zorba, xml_data_manager, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE Zorba_compile_query (int argc, VALUE * argv, VALUE self_ruby) {
+Zorba::Zorba (zorba::Zorba * zorba_zorba) {
+
+	self_zorba = zorba_zorba;
+
+	self_ruby = Data_Wrap_Struct (
+		cZorba,
+		Zorba::mark,
+		Zorba::del,
+		this);
+}
+
+VALUE Zorba::compile_query (int argc, VALUE * argv, VALUE self_ruby) {
 
 	VALUE query_ruby, staticContext_ruby;
 	switch (argc) {
@@ -80,74 +96,66 @@ VALUE Zorba_compile_query (int argc, VALUE * argv, VALUE self_ruby) {
 	zorba::String query_string (StringValueCStr (query_ruby));
 	ZR_REAL_OPT (zorba::StaticContext_t, staticContext);
 
-	auto_ptr <zorba::XQuery_t> xquery (new zorba::XQuery_t ());
+	zorba::XQuery_t xquery_zorba;
 
 	if (staticContext) {
-		* xquery = self->zorba ()->compileQuery (query_string, * staticContext);
+		xquery_zorba = self->zorba ()->compileQuery (query_string, * staticContext);
 	} else {
-		* xquery = self->zorba ()->compileQuery (query_string);
+		xquery_zorba = self->zorba ()->compileQuery (query_string);
 	}
 
-	return XQuery_wrap (xquery.release ());
+	XQuery * xquery = new XQuery (xquery_zorba);
+
+	return xquery->ruby ();
 }
 
-VALUE Zorba_create_query (VALUE self_ruby) {
+VALUE Zorba::create_query (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 
-	auto_ptr <zorba::XQuery_t> xquery (new zorba::XQuery_t ());
-	* xquery = self->zorba ()->createQuery ();
+	zorba::XQuery_t xquery_zorba;
 
-	return XQuery_wrap (xquery.release ());
+	xquery_zorba = self->zorba ()->createQuery ();
+
+	XQuery * xquery = new XQuery (xquery_zorba);
+
+	return xquery->ruby ();
 }
 
-VALUE Zorba_create_static_context (VALUE self_ruby) {
+VALUE Zorba::create_static_context (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 
 	zorba::StaticContext_t staticContext_zorba = self->zorba ()->createStaticContext ();
 
-	StaticContext * staticContext = StaticContext::wrap (staticContext_zorba);
+	StaticContext * staticContext = new StaticContext (staticContext_zorba);
 
 	return staticContext->ruby ();
 }
 
-VALUE Zorba_get_instance (VALUE self_ruby, VALUE store_ruby) {
+VALUE Zorba::get_instance (VALUE self_ruby, VALUE store_ruby) {
 
 	ZR_REAL (void, store);
 
-	Zorba * zorba = Zorba::get_instance (store);
+	zorba::Zorba * zorba_zorba = zorba::Zorba::getInstance (store);
+
+	Zorba * zorba = new Zorba (zorba_zorba);
 
 	return zorba->ruby ();
 }
 
-Zorba * Zorba::get_instance (void * store) {
-
-	Zorba * zorba = new Zorba ();
-
-	zorba->self_zorba = zorba::Zorba::getInstance (store);
-
-	zorba->self_ruby = Data_Wrap_Struct (
-		cZorba,
-		Zorba::mark,
-		Zorba::del,
-		zorba);
-
-	return zorba;
-}
-
-VALUE Zorba_item_factory (VALUE self_ruby) {
+VALUE Zorba::item_factory (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 
 	zorba::ItemFactory * itemFactory_zorba = self->zorba ()->getItemFactory ();
 
-	ItemFactory * itemFactory = ItemFactory::wrap (itemFactory_zorba);
+	ItemFactory * itemFactory = new ItemFactory (itemFactory_zorba);
 
 	return itemFactory->ruby ();
 }
 
-VALUE Zorba_shutdown (VALUE self_ruby) {
+VALUE Zorba::shutdown (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 
@@ -156,7 +164,7 @@ VALUE Zorba_shutdown (VALUE self_ruby) {
 	return Qnil;
 }
 
-VALUE Zorba_version (VALUE self_ruby) {
+VALUE Zorba::version (VALUE self_ruby) {
 
 	const zorba::Version * version_zorba = & zorba::Zorba::version ();
 
@@ -165,7 +173,7 @@ VALUE Zorba_version (VALUE self_ruby) {
 	return version->ruby ();
 }
 
-VALUE Zorba_xml_data_manager (VALUE self_ruby) {
+VALUE Zorba::xml_data_manager (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 

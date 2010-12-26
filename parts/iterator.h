@@ -22,24 +22,23 @@
 class Iterator {
 
 	zorba::Iterator_t self_zorba;
-
 	VALUE self_ruby;
-
-	Iterator () { }
 
 	~Iterator () { }
 
-public:
-
-	zorba::Iterator_t & zorba () { return self_zorba; }
-
-	VALUE ruby () { return self_ruby; }
-
 	static void mark (Iterator *);
-
 	static void del (Iterator *);
 
-	static Iterator * wrap (zorba::Iterator_t & iterator_zorba);
+public:
+
+	Iterator (zorba::Iterator_t & iterator_zorba);
+
+	zorba::Iterator_t & zorba () { return self_zorba; }
+	VALUE ruby () { return self_ruby; }
+
+	static VALUE close (VALUE self_ruby);
+	static VALUE next (VALUE self_ruby);
+	static VALUE open (VALUE self_ruby);
 };
 
 #endif
@@ -61,22 +60,18 @@ void Iterator::del (Iterator * iterator) {
 	delete iterator;
 }
 
-Iterator * Iterator::wrap (zorba::Iterator_t & iterator_zorba) {
+Iterator::Iterator (zorba::Iterator_t & iterator_zorba) {
 
-	Iterator * iterator = new Iterator ();
+	self_zorba = iterator_zorba;
 
-	iterator->self_zorba = iterator_zorba;
-
-	iterator->self_ruby = Data_Wrap_Struct (
+	self_ruby = Data_Wrap_Struct (
 		cIterator,
 		Iterator::mark,
 		Iterator::del,
-		(void *) iterator);
-
-	return iterator;
+		this);
 }
 
-VALUE Iterator_close (VALUE self_ruby) {
+VALUE Iterator::close (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Iterator_t, self);
 
@@ -85,7 +80,7 @@ VALUE Iterator_close (VALUE self_ruby) {
 	return Qnil;
 }
 
-VALUE Iterator_next (VALUE self_ruby) {
+VALUE Iterator::next (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Iterator_t, self);
 
@@ -97,7 +92,7 @@ VALUE Iterator_next (VALUE self_ruby) {
 	return item->ruby ();
 }
 
-VALUE Iterator_open (VALUE self_ruby) {
+VALUE Iterator::open (VALUE self_ruby) {
 
 	ZR_REAL (zorba::Iterator_t, self);
 
