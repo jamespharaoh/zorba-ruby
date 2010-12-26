@@ -19,26 +19,17 @@
 
 #ifdef INTERFACE_PART
 
-class Item {
+class Item : public ZorbaWrapperOwned <zorba::Item> {
 
-	Zorba * owner;
-
-	zorba::Item self_zorba;
-	VALUE self_ruby;
-
-	~Item ();
+	virtual ~Item () { }
 
 public:
 
 	Item (Zorba * owner);
 
-	zorba::Item & zorba () { return self_zorba; }
-	VALUE ruby () { return self_ruby; }
+	virtual const char * toString () { return "item"; }
 
 	static VALUE string_value (VALUE self_ruby);
-
-	static void mark (Item *);
-	static void del (Item *);
 };
 
 #endif
@@ -51,33 +42,15 @@ ZR_CLASS_METHOD (Item, string_value, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-Item::Item (Zorba * owner) {
-
-	this->owner = owner;
-
-	self_ruby = Data_Wrap_Struct (
-		cItem,
-		Item::mark,
-		Item::del,
-		this);
-}
-
-Item::~Item () {
-}
-
-void Item::mark (Item * item) {
-}
-
-void Item::del (Item * item) {
-	ZR_DEBUG ("Item::del %p %s\n", item, item->zorba ().getStringValue ().c_str ());
-	delete item;
+Item::Item (Zorba * owner) :
+	ZorbaWrapperOwned <zorba::Item> (owner, true, new zorba::Item (), cItem) {
 }
 
 VALUE Item::string_value (VALUE self_ruby) {
 
 	ZR_REAL (Item, self);
 
-	zorba::String string = self->zorba ().getStringValue ();
+	zorba::String string = self->zorba ()->getStringValue ();
 
 	return rb_str_new2 (string.c_str ());
 }

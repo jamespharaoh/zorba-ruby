@@ -60,6 +60,10 @@ VALUE cXmlDataManager;
 
 VALUE currentException = Qnil;
 
+#define STUBS_PART
+#include "parts.h"
+#undef STUBS_PART
+
 class RubyException : public exception {
 };
 
@@ -132,8 +136,6 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 
 // -------------------- ruby class and module globals
 
-#define RUBY_PART
-
 #define ZR_CLASS(name, parent) \
 	VALUE c##name;
 
@@ -146,23 +148,9 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 #define ZR_CLASS_EXCEP(under, name, parent) \
 	VALUE e##name;
 
-#define ZR_CLASS_CONST(klass, name, args)
-#define ZR_CLASS_METHOD(klass, name, args)
-#define ZR_CLASS_SINGLETON_METHOD(klass, name, args)
-#define ZR_MODULE_SINGLETON_METHOD(module, name, args)
-
+#define RUBY_PART
 #include "parts.h"
-
 #undef RUBY_PART
-
-#undef ZR_CLASS
-#undef ZR_CLASS_CLASS
-#undef ZR_CLASS_CONST
-#undef ZR_CLASS_EXCEP
-#undef ZR_CLASS_METHOD
-#undef ZR_CLASS_MODULE
-#undef ZR_CLASS_SINGLETON_METHOD
-#undef ZR_MODULE_SINGLETON_METHOD
 
 // -------------------- implementation
 
@@ -171,14 +159,6 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 #undef IMPLEMENTATION_PART
 
 // -------------------- wrap ruby methods
-
-#define RUBY_PART
-
-#define ZR_CLASS(name, parent)
-#define ZR_CLASS_CLASS(under, name, parent)
-#define ZR_CLASS_CONST(klass, name, args)
-#define ZR_CLASS_EXCEP(under, name, parent)
-#define ZR_CLASS_MODULE(under, name)
 
 #define ZR_WRAP_INVOKE_VAR_C(name, self, argc, argv) \
 	return name (argc, argv, self)
@@ -242,18 +222,9 @@ VALUE zr_funcall (VALUE self, VALUE name, int argc, ...) {
 		catch (RubyException & e) { zr_raise (e); } \
 	}
 
+#define RUBY_PART
 #include "parts.h"
-
 #undef RUBY_PART
-
-#undef ZR_CLASS
-#undef ZR_CLASS_CLASS
-#undef ZR_CLASS_CONST
-#undef ZR_CLASS_EXCEP
-#undef ZR_CLASS_METHOD
-#undef ZR_CLASS_MODULE
-#undef ZR_CLASS_SINGLETON_METHOD
-#undef ZR_MODULE_SINGLETON_METHOD
 
 #undef ZR_CLASS_INVOKE_VAR_C
 #undef ZR_CLASS_INVOKE_0
@@ -275,8 +246,6 @@ void Init_zorba () {
 #undef INIT_PART
 
 // -------------------- initialise classes, methods etc
-
-#define RUBY_PART
 
 #define ZR_CLASS(name, parent) \
 	c##name = rb_define_class (#name, parent);
@@ -302,18 +271,9 @@ void Init_zorba () {
 #define ZR_MODULE_SINGLETON_METHOD(module, name, args) \
 	rb_define_singleton_method (m##module, zr_map_method_name (#name), RUBY_METHOD_FUNC (module##_##name##_wrap), -1);
 
+#define RUBY_PART
 #include "parts.h"
-
 #undef RUBY_PART
-
-#undef ZR_CLASS
-#undef ZR_CLASS_CLASS
-#undef ZR_CLASS_CONST
-#undef ZR_CLASS_EXCEP
-#undef ZR_CLASS_METHOD
-#undef ZR_CLASS_MODULE
-#undef ZR_CLASS_SINGLETON_METHOD
-#undef ZR_MODULE_SINGLETON_METHOD
 
 // --------------------
 

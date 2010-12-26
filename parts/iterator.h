@@ -90,7 +90,7 @@ VALUE Iterator::next (VALUE self_ruby) {
 
 	Item * item = new Item (self->owner);
 
-	bool ret = self->zorba ()->next (item->zorba ());
+	bool ret = self->zorba ()->next (* item->zorba ());
 	if (! ret) return Qnil;
 
 	return item->ruby ();

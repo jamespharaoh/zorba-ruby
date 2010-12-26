@@ -17,6 +17,11 @@
  *
  */
 
+#ifdef STUBS_PART
+
+class Zorba;
+
+#endif
 #ifdef INTERFACE_PART
 
 class Zorba {
@@ -27,10 +32,20 @@ class Zorba {
 	Zorba (zorba::Zorba * zorba_zorba);
 	~Zorba () { }
 
+	set <ZorbaWrapper *> owned;
+
 public:
 
 	zorba::Zorba * zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
+
+	void addOwned (ZorbaWrapper * wrapper) {
+		owned.insert (wrapper);
+	}
+
+	void removeOwned (ZorbaWrapper * wrapper) {
+		owned.erase (wrapper);
+	}
 
 	static VALUE compile_query (int argc, VALUE * argv, VALUE self_ruby);
 	static VALUE create_query (VALUE self_ruby);
@@ -99,7 +114,7 @@ VALUE Zorba::compile_query (int argc, VALUE * argv, VALUE self_ruby) {
 	zorba::XQuery_t xquery_zorba;
 
 	if (staticContext) {
-		xquery_zorba = self->zorba ()->compileQuery (query_string, staticContext->zorba ());
+		xquery_zorba = self->zorba ()->compileQuery (query_string, staticContext->zorba_p ());
 	} else {
 		xquery_zorba = self->zorba ()->compileQuery (query_string);
 	}
@@ -126,9 +141,10 @@ VALUE Zorba::create_static_context (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 
-	zorba::StaticContext_t staticContext_zorba = self->zorba ()->createStaticContext ();
+	zorba::StaticContext_t * staticContext_zorba =
+		new zorba::StaticContext_t (self->zorba ()->createStaticContext ());
 
-	StaticContext * staticContext = new StaticContext (self, staticContext_zorba);
+	StaticContextCounted * staticContext = new StaticContextCounted (self, staticContext_zorba);
 
 	return staticContext->ruby ();
 }
@@ -158,6 +174,10 @@ VALUE Zorba::item_factory (VALUE self_ruby) {
 VALUE Zorba::shutdown (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
+
+	set <ZorbaWrapper *> owned (self->owned);
+	for (set <ZorbaWrapper *>::iterator it = owned.begin (); it != owned.end (); it++)
+		(* it)->unwrap ();
 
 	self->zorba ()->shutdown ();
 

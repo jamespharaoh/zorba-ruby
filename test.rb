@@ -124,8 +124,6 @@ sctx.register_module MyModule.new
 	xquery.close
 end
 
-sctx.free
-
 $zorba.shutdown
 Zorba::StoreManager.shutdown_store $store
 

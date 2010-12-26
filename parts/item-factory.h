@@ -98,10 +98,10 @@ VALUE ItemFactory::create_element_node (
 
 	Item * item = new Item (self->owner);
 
-	item->zorba () = self->zorba ()->createElementNode (
-		parent ? parent->zorba () : null_zorba,
-		nodeName ? nodeName->zorba () : null_zorba,
-		typeName ? typeName->zorba () : null_zorba,
+	* item->zorba () = self->zorba ()->createElementNode (
+		parent ? * parent->zorba () : null_zorba,
+		nodeName ? * nodeName->zorba () : null_zorba,
+		typeName ? * typeName->zorba () : null_zorba,
 		RTEST (hasTypedValue_ruby) ? true : false,
 		RTEST (hasEmptyValue_ruby) ? true : false,
 		vector<pair<zorba::String,zorba::String> > ());
@@ -115,7 +115,7 @@ VALUE ItemFactory::create_integer (VALUE self_ruby, VALUE integer_ruby) {
 
 	Item * item = new Item (self->owner);
 
-	item->zorba () = self->zorba ()->createInteger (NUM2ULONG (integer_ruby));
+	* item->zorba () = self->zorba ()->createInteger (NUM2ULONG (integer_ruby));
 
 	return item->ruby ();
 }
@@ -126,7 +126,7 @@ VALUE ItemFactory::create_qname (VALUE self_ruby, VALUE ns_ruby, VALUE localName
 
 	Item * item = new Item (self->owner);
 
-	item->zorba () = self->zorba ()->createQName (RSTRING (ns_ruby)->ptr, RSTRING (localName_ruby)->ptr);
+	* item->zorba () = self->zorba ()->createQName (RSTRING (ns_ruby)->ptr, RSTRING (localName_ruby)->ptr);
 
 	return item->ruby ();
 }
@@ -137,7 +137,7 @@ VALUE ItemFactory::create_string (VALUE self_ruby, VALUE str_ruby) {
 
 	Item * item = new Item (self->owner);
 
-	item->zorba () = self->zorba ()->createString (RSTRING (str_ruby)->ptr);
+	* item->zorba () = self->zorba ()->createString (RSTRING (str_ruby)->ptr);
 
 	return item->ruby ();
 }

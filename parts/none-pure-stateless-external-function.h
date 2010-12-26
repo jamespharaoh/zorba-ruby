@@ -116,9 +116,8 @@ zorba::ItemSequence_t NonePureStatelessExternalFunction::Delegate::evaluate (
 		const zorba::DynamicContext * dynamicContext) const {
 
 	// TODO maintain constness in ruby
-	StaticContext * staticContext = new StaticContext (
-		owner,
-		(zorba::StaticContext *) staticContext_zorba);
+	StaticContextRaw * staticContext = new StaticContextRaw (
+		owner, (zorba::StaticContext *) staticContext_zorba);
 
 	VALUE itemSequence_ruby = zr_funcall (
 		target->caster (),

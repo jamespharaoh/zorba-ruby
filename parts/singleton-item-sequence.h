@@ -67,7 +67,7 @@ VALUE SingletonItemSequence::new_new (VALUE self_ruby, VALUE item_ruby) {
 
 	ZR_REAL (Item, item);
 
-	zorba::ItemSequence * itemSequence_zorba = new zorba::SingletonItemSequence (item->zorba ());
+	zorba::ItemSequence * itemSequence_zorba = new zorba::SingletonItemSequence (* item->zorba ());
 
 	ItemSequence * itemSequence = new ItemSequence (cSingletonItemSequence, itemSequence_zorba);
 

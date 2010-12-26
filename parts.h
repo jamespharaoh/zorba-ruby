@@ -17,7 +17,41 @@
  *
  */
 
+#ifndef ZR_CLASS
+#define ZR_CLASS(name, parent)
+#endif
+
+#ifndef ZR_CLASS_CLASS
+#define ZR_CLASS_CLASS(under, name, parent)
+#endif
+
+#ifndef ZR_CLASS_CONST
+#define ZR_CLASS_CONST(klass, name, args)
+#endif
+
+#ifndef ZR_CLASS_EXCEP
+#define ZR_CLASS_EXCEP(under, name, parent)
+#endif
+
+#ifndef ZR_CLASS_METHOD
+#define ZR_CLASS_METHOD(klass, name, args)
+#endif
+
+#ifndef ZR_CLASS_MODULE
+#define ZR_CLASS_MODULE(under, name)
+#endif
+
+#ifndef ZR_CLASS_SINGLETON_METHOD
+#define ZR_CLASS_SINGLETON_METHOD(klass, name, args)
+#endif
+
+#ifndef ZR_MODULE_SINGLETON_METHOD
+#define ZR_MODULE_SINGLETON_METHOD(module, name, args)
+#endif
+
 #include "parts/zorba.h"
+
+#include "parts/zorba-wrapper.h"
 
 #include "parts/compiler-hints.h"
 #include "parts/dynamic-context.h"
@@ -36,3 +70,12 @@
 #include "parts/zorba-exception.h"
 
 #include "parts/module-uri-resolver-result.h"
+
+#undef ZR_CLASS
+#undef ZR_CLASS_CLASS
+#undef ZR_CLASS_CONST
+#undef ZR_CLASS_EXCEP
+#undef ZR_CLASS_METHOD
+#undef ZR_CLASS_MODULE
+#undef ZR_CLASS_SINGLETON_METHOD
+#undef ZR_MODULE_SINGLETON_METHOD

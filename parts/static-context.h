@@ -19,29 +19,54 @@
 
 #ifdef INTERFACE_PART
 
-class StaticContext {
+template <class T>
+class StaticContextCommon : public ZorbaWrapperOwned <T> {
 
-	Zorba * owner;
+protected:
 
-	zorba::StaticContext_t self_zorba;
-	VALUE self_ruby;
+	StaticContextCommon (Zorba * owner, bool isOwned, T * staticContext_zorba, VALUE rubyClass) :
+		ZorbaWrapperOwned <T> (owner, isOwned, staticContext_zorba, rubyClass) {
+	}
 
-	~StaticContext () { }
+	virtual ~StaticContextCommon () { }
 
 public:
 
-	StaticContext (Zorba * owner, zorba::StaticContext_t);
+	virtual zorba::StaticContext * zorba_p () = 0;
 
-	zorba::StaticContext * zorba () { return self_zorba; }
-	VALUE ruby () { return self_ruby; }
+	virtual const char * toString () { return "StaticContext"; }
+};
+
+class StaticContext : public StaticContextCommon <void> {
+
+public:
 
 	static VALUE add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby);
 	static VALUE free (VALUE self_ruby);
 	static VALUE load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hints_ruby);
 	static VALUE register_module (VALUE self_ruby, VALUE module_ruby);
+};
 
-	static void mark (StaticContext *);
-	static void del (StaticContext *);
+class StaticContextCounted : public StaticContextCommon <zorba::StaticContext_t> {
+
+public:
+
+	StaticContextCounted (Zorba * owner, zorba::StaticContext_t * staticContext_zorba);
+
+	virtual zorba::StaticContext * zorba_p () {
+		return zorba ()->get ();
+	}
+};
+
+class StaticContextRaw : public StaticContextCommon <zorba::StaticContext> {
+
+public:
+
+	StaticContextRaw (Zorba * owner, zorba::StaticContext * staticContext_zorba);
+
+	virtual zorba::StaticContext * zorba_p () {
+		return zorba ();
+	}
 };
 
 #endif
@@ -57,13 +82,12 @@ ZR_CLASS_METHOD (StaticContext, register_module, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-StaticContext::StaticContext (Zorba * owner, zorba::StaticContext_t staticContext_zorba) {
+StaticContextCounted::StaticContextCounted (Zorba * owner, zorba::StaticContext_t * staticContext_zorba) :
+	StaticContextCommon <zorba::StaticContext_t> (owner, true, staticContext_zorba, cStaticContext) {
+}
 
-	this->owner = owner;
-
-	self_zorba = staticContext_zorba;
-
-	self_ruby = Data_Wrap_Struct (cStaticContext, mark, del, this);
+StaticContextRaw::StaticContextRaw (Zorba * owner, zorba::StaticContext * staticContext_zorba) :
+	StaticContextCommon <zorba::StaticContext> (owner, false, staticContext_zorba, cStaticContext) {
 }
 
 VALUE StaticContext::add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby) {
@@ -74,7 +98,7 @@ VALUE StaticContext::add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriRe
 
 	ZR_REAL (ModuleUriResolver, moduleUriResolverZorba);
 
-	self->zorba ()->addModuleURIResolver (moduleUriResolverZorba);
+	self->zorba_p ()->addModuleURIResolver (moduleUriResolverZorba);
 
 	return Qnil;
 }
@@ -83,7 +107,7 @@ VALUE StaticContext::free (VALUE self_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
-	self->zorba ()->free ();
+	self->zorba_p ()->free ();
 
 	return Qnil;
 }
@@ -94,7 +118,7 @@ VALUE StaticContext::load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hint
 	const char * prolog = StringValueCStr (prolog_ruby);
 	ZR_SHADOW (CompilerHints, hints);
 
-	self->zorba ()->loadProlog (zorba::String (prolog), hints->zorba ());
+	self->zorba_p ()->loadProlog (zorba::String (prolog), hints->zorba ());
 }
 
 VALUE StaticContext::register_module (VALUE self_ruby, VALUE module_ruby) {
@@ -104,17 +128,9 @@ VALUE StaticContext::register_module (VALUE self_ruby, VALUE module_ruby) {
 	ExternalModuleWrapper * module =
 		new ExternalModuleWrapper (self->owner, module_ruby);
 
-	self->zorba ()->registerModule (module);
+	self->zorba_p ()->registerModule (module);
 
 	return Qnil;
-}
-
-void StaticContext::del (StaticContext * staticContext) {
-	ZR_DEBUG ("StaticContext::del %p\n", staticContext);
-	delete staticContext;
-}
-
-void StaticContext::mark (StaticContext * staticContext) {
 }
 
 #endif
