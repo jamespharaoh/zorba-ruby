@@ -27,7 +27,7 @@ public:
 
 	Item (Zorba * owner);
 
-	virtual const char * toString () { return "item"; }
+	virtual string toString () { return "Item"; }
 
 	static VALUE string_value (VALUE self_ruby);
 };

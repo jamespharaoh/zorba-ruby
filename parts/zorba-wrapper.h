@@ -37,7 +37,7 @@ public:
 
 	virtual void unwrap () = 0;
 
-	virtual const char * toString () = 0;
+	virtual string toString () = 0;
 };
 
 template <class T>
@@ -59,7 +59,7 @@ protected:
 	bool isOwned;
 
 	ZorbaWrapperOwned (Zorba * owner, bool isOwned, T * self_zorba, VALUE rubyClass) {
-ZR_DEBUG ("init %p\n", this);
+ZR_DEBUG ("init %p ", this);
 
 		this->owner = owner;
 		this->isOwned = isOwned;
@@ -69,28 +69,28 @@ ZR_DEBUG ("init %p\n", this);
 		self_ruby = Data_Wrap_Struct (rubyClass, mark_static, delete_static, this);
 
 		owner->addOwned (this);
-ZR_DEBUG ("init %p done\n", this);
+ZR_DEBUG ("done\n");
 	}
 
 	virtual ~ZorbaWrapperOwned () {
-ZR_DEBUG ("destroy %s %p\n", toString (), this);
+ZR_DEBUG ("destroy %s %p ", toString ().c_str (), this);
 
 		unwrap ();
-ZR_DEBUG ("destroy %p done\n", this);
+ZR_DEBUG ("done\n");
 	}
 
 	virtual void unwrap () {
 
 		if (! self_zorba)
 			return;
-ZR_DEBUG ("unwrap %s %p\n", toString (), this);
+ZR_DEBUG ("unwrap %s %p ", toString ().c_str (), this);
 
 		if (isOwned)
 			delete self_zorba;
 		self_zorba = NULL;
 
 		owner->removeOwned (this);
-ZR_DEBUG ("unwrap %p done\n", this);
+ZR_DEBUG ("done\n");
 	}
 
 public:

@@ -34,7 +34,7 @@ public:
 
 	virtual zorba::StaticContext * zorba_p () = 0;
 
-	virtual const char * toString () { return "StaticContext"; }
+	virtual string toString () { return "StaticContext"; }
 };
 
 class StaticContext : public StaticContextCommon <void> {
