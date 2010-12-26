@@ -55,7 +55,7 @@ zorba::StatelessExternalFunction * ExternalModuleWrapper::getExternalFunction (
 
 	ZR_REAL (StatelessExternalFunction, shadow);
 
-	return & shadow->delegate ();
+	return shadow->delegate ();
 }
 
 zorba::String ExternalModuleWrapper::getURI () const {

@@ -23,7 +23,7 @@ class StatelessExternalFunction {
 
 public:
 
-	virtual zorba::StatelessExternalFunction & delegate () = 0;
+	virtual zorba::StatelessExternalFunction * delegate () = 0;
 };
 
 class NonePureStatelessExternalFunction : public StatelessExternalFunction {
@@ -51,8 +51,6 @@ class NonePureStatelessExternalFunction : public StatelessExternalFunction {
 	VALUE caster_ruby;
 	VALUE shadow_ruby;
 
-	Delegate delegate_val;
-
 	~NonePureStatelessExternalFunction () { }
 
 public:
@@ -62,7 +60,9 @@ public:
 	VALUE caster () { return caster_ruby; }
 	VALUE shadow () { return shadow_ruby; }
 
-	virtual zorba::NonePureStatelessExternalFunction & delegate () { return delegate_val; }
+	virtual zorba::NonePureStatelessExternalFunction * delegate () {
+		return new Delegate (this);
+	}
 
 	static VALUE initialize (VALUE self_ruby);
 
@@ -80,8 +80,7 @@ ZR_CLASS_METHOD (NonePureStatelessExternalFunction, initialize, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-NonePureStatelessExternalFunction::NonePureStatelessExternalFunction (VALUE caster_ruby) :
-	delegate_val (this) {
+NonePureStatelessExternalFunction::NonePureStatelessExternalFunction (VALUE caster_ruby) {
 
 	this->caster_ruby = caster_ruby;
 
