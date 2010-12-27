@@ -19,19 +19,17 @@
 
 #ifdef INTERFACE_PART
 
-class XQuery {
-
-	Zorba * owner;
-
-	zorba::XQuery_t self_zorba;
-	VALUE self_ruby;
+class XQuery :
+	public ZorbaWrapperOwnedImpl <XQuery, zorba::XQuery_t>,
+	public ZorbaWrapperOwner {
 
 public:
 
-	XQuery (Zorba * owner, zorba::XQuery_t & xquery);
+	XQuery (ZorbaWrapperOwner * owner, zorba::XQuery_t & xquery);
 
-	const zorba::XQuery_t & zorba () { return self_zorba; }
-	VALUE ruby () { return self_ruby; }
+	zorba::XQuery * zorba () { return self_zorba->get (); }
+
+	virtual string toString () { return "XQuery"; }
 
 	static VALUE close (VALUE self_ruby);
 	static VALUE clone (VALUE self_ruby);
@@ -61,13 +59,9 @@ ZR_CLASS_METHOD (XQuery, filename_eq, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-XQuery::XQuery (Zorba * owner, zorba::XQuery_t & xquery_zorba) {
-
-	this->owner = owner;
-
-	self_zorba = xquery_zorba;
-
-	self_ruby = Data_Wrap_Struct (cXQuery, mark, del, this);
+XQuery::XQuery (ZorbaWrapperOwner * owner, zorba::XQuery_t & xquery_zorba) :
+	ZorbaWrapperOwnedImpl <XQuery, zorba::XQuery_t> (
+		owner, true, new zorba::XQuery_t (xquery_zorba), cXQuery) {
 }
 
 VALUE XQuery::close (VALUE self_ruby) {
@@ -87,7 +81,7 @@ VALUE XQuery::clone (VALUE self_ruby) {
 
 	cloned_zorba = self->zorba ()->clone ();
 
-	XQuery * cloned = new XQuery (self->owner, cloned_zorba);
+	XQuery * cloned = new XQuery (self->owner (), cloned_zorba);
 
 	return cloned->ruby ();
 }
@@ -116,7 +110,7 @@ VALUE XQuery::execute (VALUE self_ruby) {
 
 	ZR_REAL (XQuery, self);
 
-	basic_ostringstream<char> out;
+	basic_ostringstream <char> out;
 
 	self->zorba ()->execute (out);
 
@@ -127,9 +121,9 @@ VALUE XQuery::iterator (VALUE self_ruby) {
 
 	ZR_REAL (XQuery, self);
 
-	zorba::Iterator_t iterator_zorba = self->zorba ()->iterator ();
+	Iterator * iterator = new Iterator (self);
 
-	Iterator * iterator = new Iterator (self->owner, iterator_zorba);
+	iterator->zorba () = self->zorba ()->iterator ();
 
 	return iterator->ruby ();
 }

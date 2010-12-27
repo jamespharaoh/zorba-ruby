@@ -49,9 +49,9 @@
 #define ZR_MODULE_SINGLETON_METHOD(module, name, args)
 #endif
 
-#include "parts/zorba.h"
-
 #include "parts/zorba-wrapper.h"
+
+#include "parts/zorba.h"
 
 #include "parts/compiler-hints.h"
 #include "parts/dynamic-context.h"

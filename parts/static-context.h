@@ -20,8 +20,7 @@
 #ifdef INTERFACE_PART
 
 class StaticContext :
-	public virtual ZorbaWrapperOwned <Zorba>,
-	public virtual ZorbaWrapper {
+	public virtual ZorbaWrapperOwned {
 
 public:
 
@@ -34,12 +33,12 @@ public:
 };
 
 class StaticContextCounted :
-	public ZorbaWrapperOwnedImpl <Zorba, zorba::StaticContext_t>,
+	public ZorbaWrapperOwnedImpl <StaticContext, zorba::StaticContext_t>,
 	public virtual StaticContext {
 
 public:
 
-	StaticContextCounted (Zorba * owner, zorba::StaticContext_t * staticContext_zorba);
+	StaticContextCounted (ZorbaWrapperOwner * owner, zorba::StaticContext_t * staticContext_zorba);
 
 	virtual string toString () { return "StaticContextCounted"; }
 
@@ -49,12 +48,12 @@ public:
 };
 
 class StaticContextRaw :
-	public ZorbaWrapperOwnedImpl <Zorba, zorba::StaticContext>,
+	public ZorbaWrapperOwnedImpl <StaticContext, zorba::StaticContext>,
 	public virtual StaticContext {
 
 public:
 
-	StaticContextRaw (Zorba * owner, zorba::StaticContext * staticContext_zorba);
+	StaticContextRaw (ZorbaWrapperOwner * owner, zorba::StaticContext * staticContext_zorba);
 
 	virtual string toString () { return "StaticContextRaw"; }
 
@@ -76,12 +75,12 @@ ZR_CLASS_METHOD (StaticContext, register_module, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-StaticContextCounted::StaticContextCounted (Zorba * owner, zorba::StaticContext_t * staticContext_zorba) :
-	ZorbaWrapperOwnedImpl <Zorba, zorba::StaticContext_t> (owner, true, staticContext_zorba, cStaticContext) {
+StaticContextCounted::StaticContextCounted (ZorbaWrapperOwner * owner, zorba::StaticContext_t * staticContext_zorba) :
+	ZorbaWrapperOwnedImpl <StaticContext, zorba::StaticContext_t> (owner, true, staticContext_zorba, cStaticContext) {
 }
 
-StaticContextRaw::StaticContextRaw (Zorba * owner, zorba::StaticContext * staticContext_zorba) :
-	ZorbaWrapperOwnedImpl <Zorba, zorba::StaticContext> (owner, false, staticContext_zorba, cStaticContext) {
+StaticContextRaw::StaticContextRaw (ZorbaWrapperOwner * owner, zorba::StaticContext * staticContext_zorba) :
+	ZorbaWrapperOwnedImpl <StaticContext, zorba::StaticContext> (owner, false, staticContext_zorba, cStaticContext) {
 }
 
 VALUE StaticContext::add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby) {

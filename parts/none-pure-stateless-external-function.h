@@ -23,20 +23,20 @@ class StatelessExternalFunction {
 
 public:
 
-	virtual zorba::StatelessExternalFunction * delegate (Zorba *) = 0;
+	virtual zorba::StatelessExternalFunction * delegate (ZorbaWrapperOwner *) = 0;
 };
 
 class NonePureStatelessExternalFunction : public StatelessExternalFunction {
 
 	class Delegate : public zorba::NonePureStatelessExternalFunction {
 
-		Zorba * owner;
+		ZorbaWrapperOwner * owner;
 
 		::NonePureStatelessExternalFunction * target;
 
 	public:
 
-		Delegate (Zorba * owner, ::NonePureStatelessExternalFunction * target) {
+		Delegate (ZorbaWrapperOwner * owner, ::NonePureStatelessExternalFunction * target) {
 			this->owner = owner;
 			this->target = target;
 		}
@@ -63,7 +63,7 @@ public:
 	VALUE caster () { return caster_ruby; }
 	VALUE shadow () { return shadow_ruby; }
 
-	virtual zorba::NonePureStatelessExternalFunction * delegate (Zorba * owner) {
+	virtual zorba::NonePureStatelessExternalFunction * delegate (ZorbaWrapperOwner * owner) {
 		return new Delegate (owner, this);
 	}
 

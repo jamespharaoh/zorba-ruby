@@ -20,8 +20,9 @@
 #ifdef STUBS_PART
 
 class ZorbaWrapper;
-template <class Owner> class ZorbaWrapperOwned;
-template <class Owner, class T> class ZorbaWrapperOwnedImpl;
+class ZorbwWrapperOwner;
+class ZorbaWrapperOwned;
+template <class Wrapper, class Wrapped> class ZorbaWrapperOwnedImpl;
 
 #endif
 #ifdef INTERFACE_PART
@@ -34,50 +35,77 @@ protected:
 
 	virtual ~ZorbaWrapper () { }
 
+	virtual void disownOwned () { }
+
 public:
 
 	virtual string toString () = 0;
 
-	virtual void disown () = 0;
+	virtual void disown () { }
 };
 
-template <class Owner>
-class ZorbaWrapperOwned : public virtual ZorbaWrapper {
+class ZorbaWrapperOwner :
+	public virtual ZorbaWrapper {
+
+protected:
+
+	set <ZorbaWrapperOwned *> owned;
+
+	virtual void disownOwned ();
 
 public:
 
-	virtual Owner * owner () = 0;
+	void addOwned (ZorbaWrapperOwned * wrapper) {
+		owned.insert (wrapper);
+	}
+
+	void removeOwned (ZorbaWrapperOwned * wrapper) {
+		owned.erase (wrapper);
+	}
+};
+
+class ZorbaWrapperOwned :
+	public virtual ZorbaWrapper {
+
+public:
+
+	virtual ZorbaWrapperOwner * owner () = 0;
 	virtual bool isOwned () = 0;
 };
 
-template <class Owner, class T>
-class ZorbaWrapperOwnedImpl : public virtual ZorbaWrapperOwned<Owner>, public virtual ZorbaWrapper {
+template <class Wrapper, class Wrapped>
+class ZorbaWrapperOwnedImpl : public virtual ZorbaWrapperOwned, public virtual ZorbaWrapper {
 
-	static void mark_static (ZorbaWrapperOwnedImpl <Owner, T> * self) {
+	static void mark_static (Wrapper * self) {
 	}
 
-	static void delete_static (ZorbaWrapperOwnedImpl <Owner, T> * self) {
-		self->disown ();
-		delete self;
+	static void delete_static (Wrapper * self) {
+		try {
+
+			self->disown ();
+
+			delete (ZorbaWrapperOwnedImpl <Wrapper, Wrapped> *) self;
+		}
+		catch (zorba::ZorbaException & e) { zr_raise (e); }
+		catch (RubyException & e) { zr_raise (e); }
 	}
 
 protected:
 
-	Owner * owner_val;
+	ZorbaWrapperOwner * owner_val;
 	bool isOwned_val;
 
-	T * self_zorba;
+	Wrapped * self_zorba;
 	VALUE self_ruby;
 
-	ZorbaWrapperOwnedImpl (Owner * owner_arg, bool isOwned_arg, T * self_zorba, VALUE rubyClass) {
+	ZorbaWrapperOwnedImpl (ZorbaWrapperOwner * owner_arg, bool isOwned_arg, Wrapped * self_zorba, VALUE rubyClass) {
 
 		owner_val = owner_arg;
 		isOwned_val = isOwned_arg;
 
 		this->self_zorba = self_zorba;
 
-		self_ruby = Data_Wrap_Struct (rubyClass, mark_static, delete_static,
-			(ZorbaWrapperOwnedImpl <Owner, T> *) this);
+		self_ruby = Data_Wrap_Struct (rubyClass, mark_static, delete_static, (Wrapper *) this);
 
 		if (isOwned_val)
 			owner_val->addOwned (this);
@@ -88,16 +116,18 @@ protected:
 
 public:
 
-	virtual Owner * owner () { return owner_val; }
+	virtual ZorbaWrapperOwner * owner () { return owner_val; }
 	virtual bool isOwned () { return isOwned_val; }
 
-	T * zorba () { return self_zorba; }
+	Wrapped * zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
 
 	virtual void disown () {
 
 		if (! self_zorba)
 			return;
+
+		disownOwned ();
 
 		if (isOwned_val)
 			delete self_zorba;
@@ -109,5 +139,11 @@ public:
 
 #endif
 #ifdef IMPLEMENTATION_PART
+
+void ZorbaWrapperOwner::disownOwned () {
+	set <ZorbaWrapperOwned *> owned (this->owned);
+	for (set <ZorbaWrapperOwned *>::iterator it = owned.begin (); it != owned.end (); it++)
+		(* it)->disown ();
+}
 
 #endif

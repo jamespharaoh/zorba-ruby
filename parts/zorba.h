@@ -24,7 +24,8 @@ class Zorba;
 #endif
 #ifdef INTERFACE_PART
 
-class Zorba {
+class Zorba :
+	public virtual ZorbaWrapperOwner {
 
 	zorba::Zorba * self_zorba;
 	VALUE self_ruby;
@@ -32,20 +33,12 @@ class Zorba {
 	Zorba (zorba::Zorba * zorba_zorba);
 	~Zorba () { }
 
-	set <ZorbaWrapperOwned <Zorba> *> owned;
-
 public:
+
+	virtual string toString () { return "Zorba"; }
 
 	zorba::Zorba * zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
-
-	void addOwned (ZorbaWrapperOwned <Zorba> * wrapper) {
-		owned.insert (wrapper);
-	}
-
-	void removeOwned (ZorbaWrapperOwned <Zorba> * wrapper) {
-		owned.erase (wrapper);
-	}
 
 	static VALUE compile_query (int argc, VALUE * argv, VALUE self_ruby);
 	static VALUE create_query (VALUE self_ruby);
@@ -175,11 +168,11 @@ VALUE Zorba::shutdown (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 
-	set <ZorbaWrapperOwned <Zorba> *> owned (self->owned);
-	for (set <ZorbaWrapperOwned <Zorba> *>::iterator it = owned.begin (); it != owned.end (); it++)
-		(* it)->disown ();
+ZR_DEBUG ("and....\n");
+	self->disownOwned ();
 
 	self->zorba ()->shutdown ();
+ZR_DEBUG ("shutdown!\n");
 
 	return Qnil;
 }

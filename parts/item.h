@@ -20,15 +20,13 @@
 #ifdef INTERFACE_PART
 
 class Item :
-	public ZorbaWrapperOwnedImpl <Zorba, zorba::Item>,
-	public virtual ZorbaWrapperOwned <Zorba>,
-	public virtual ZorbaWrapper {
+	public ZorbaWrapperOwnedImpl <Item, zorba::Item> {
 
 	virtual ~Item () { }
 
 public:
 
-	Item (Zorba * owner);
+	Item (ZorbaWrapperOwner * owner);
 
 	virtual string toString () { return "Item"; }
 
@@ -45,8 +43,8 @@ ZR_CLASS_METHOD (Item, string_value, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-Item::Item (Zorba * owner) :
-	ZorbaWrapperOwnedImpl <Zorba, zorba::Item> (owner, true, new zorba::Item (), cItem) {
+Item::Item (ZorbaWrapperOwner * owner) :
+	ZorbaWrapperOwnedImpl <Item, zorba::Item> (owner, true, new zorba::Item (), cItem) {
 }
 
 VALUE Item::string_value (VALUE self_ruby) {

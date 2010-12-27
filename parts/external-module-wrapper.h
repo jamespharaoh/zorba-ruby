@@ -21,13 +21,13 @@
 
 class ExternalModuleWrapper : public zorba::ExternalModule {
 
-	Zorba * owner;
+	ZorbaWrapperOwner * owner;
 
 	VALUE value;
 
 public:
 
-	ExternalModuleWrapper (Zorba * owner, VALUE value) {
+	ExternalModuleWrapper (ZorbaWrapperOwner * owner, VALUE value) {
 		this->owner = owner;
 		this->value = value;
 	}

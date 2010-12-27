@@ -19,24 +19,18 @@
 
 #ifdef INTERFACE_PART
 
-class Iterator {
+class Iterator :
+	public ZorbaWrapperOwnedImpl <Iterator, zorba::Iterator_t> {
 
-	Zorba * owner;
-
-	zorba::Iterator_t self_zorba;
-	VALUE self_ruby;
-
-	~Iterator () { }
-
-	static void mark (Iterator *);
-	static void del (Iterator *);
+	virtual ~Iterator () { }
 
 public:
 
-	Iterator (Zorba * owner, zorba::Iterator_t & iterator_zorba);
+	Iterator (ZorbaWrapperOwner * owner);
 
-	zorba::Iterator_t & zorba () { return self_zorba; }
-	VALUE ruby () { return self_ruby; }
+	virtual string toString () { return "Iterator"; }
+
+	zorba::Iterator_t & zorba () { return * self_zorba; }
 
 	static VALUE close (VALUE self_ruby);
 	static VALUE next (VALUE self_ruby);
@@ -55,24 +49,9 @@ ZR_CLASS_METHOD (Iterator, open, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void Iterator::mark (Iterator * iterator) {
-}
-
-void Iterator::del (Iterator * iterator) {
-	delete iterator;
-}
-
-Iterator::Iterator (Zorba * owner, zorba::Iterator_t & iterator_zorba) {
-
-	this->owner = owner;
-
-	self_zorba = iterator_zorba;
-
-	self_ruby = Data_Wrap_Struct (
-		cIterator,
-		Iterator::mark,
-		Iterator::del,
-		this);
+Iterator::Iterator (ZorbaWrapperOwner * owner) :
+	ZorbaWrapperOwnedImpl <Iterator, zorba::Iterator_t> (
+		owner, true, new zorba::Iterator_t (), cIterator) {
 }
 
 VALUE Iterator::close (VALUE self_ruby) {
@@ -88,7 +67,7 @@ VALUE Iterator::next (VALUE self_ruby) {
 
 	ZR_REAL (Iterator, self);
 
-	Item * item = new Item (self->owner);
+	Item * item = new Item (self->owner ());
 
 	bool ret = self->zorba ()->next (* item->zorba ());
 	if (! ret) return Qnil;

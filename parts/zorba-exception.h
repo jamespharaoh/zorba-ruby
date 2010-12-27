@@ -17,7 +17,9 @@
  *
  */
 
-#ifdef INTERFACE_PART
+#ifdef STUBS_PART
+
+class RubyException;
 
 void zr_raise (const zorba::ZorbaException &);
 void zr_raise (const RubyException &);
@@ -40,6 +42,8 @@ ZR_CLASS_EXCEP (Zorba, UserException, eQueryException)
 #ifdef IMPLEMENTATION_PART
 
 void zr_raise (const zorba::ZorbaException & zorbaException) {
+
+ZR_DEBUG ("raising...\n");
 
 	if (RTEST (currentException)) {
 		VALUE currentExceptionTemp = currentException;

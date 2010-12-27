@@ -24,7 +24,7 @@ class DynamicContext {
 	zorba::DynamicContext * self_zorba;
 	VALUE self_ruby;
 
-	~DynamicContext ();
+	~DynamicContext () { }
 
 public:
 
