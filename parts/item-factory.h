@@ -63,7 +63,6 @@ void ItemFactory::mark (ItemFactory * itemFactory) {
 }
 
 void ItemFactory::del (ItemFactory * itemFactory) {
-	ZR_DEBUG ("ItemFactory::del %p\n", itemFactory);
 	delete itemFactory;
 }
 

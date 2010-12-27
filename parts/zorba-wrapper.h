@@ -57,7 +57,7 @@ class ZorbaWrapperOwnedImpl : public virtual ZorbaWrapperOwned<Owner>, public vi
 	}
 
 	static void delete_static (ZorbaWrapperOwnedImpl <Owner, T> * self) {
-ZR_DEBUG ("delete %s %p\n", self->toString ().c_str (), self);
+		self->disown ();
 		delete self;
 	}
 
@@ -70,7 +70,6 @@ protected:
 	VALUE self_ruby;
 
 	ZorbaWrapperOwnedImpl (Owner * owner_arg, bool isOwned_arg, T * self_zorba, VALUE rubyClass) {
-ZR_DEBUG ("init %p %p ", this, (ZorbaWrapper *) this);
 
 		owner_val = owner_arg;
 		isOwned_val = isOwned_arg;
@@ -82,28 +81,9 @@ ZR_DEBUG ("init %p %p ", this, (ZorbaWrapper *) this);
 
 		if (isOwned_val)
 			owner_val->addOwned (this);
-ZR_DEBUG ("done\n");
 	}
 
 	virtual ~ZorbaWrapperOwnedImpl () {
-ZR_DEBUG ("destroy %p ", this);
-
-		disown ();
-ZR_DEBUG ("done\n");
-	}
-
-	virtual void disown () {
-
-		if (! self_zorba)
-			return;
-ZR_DEBUG ("disown %s %p ", toString ().c_str (), this);
-
-		if (isOwned_val)
-			delete self_zorba;
-		self_zorba = NULL;
-
-		owner_val->removeOwned (this);
-ZR_DEBUG ("done\n");
 	}
 
 public:
@@ -113,6 +93,18 @@ public:
 
 	T * zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
+
+	virtual void disown () {
+
+		if (! self_zorba)
+			return;
+
+		if (isOwned_val)
+			delete self_zorba;
+		self_zorba = NULL;
+
+		owner_val->removeOwned (this);
+	}
 };
 
 #endif

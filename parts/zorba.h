@@ -203,7 +203,6 @@ VALUE Zorba::xml_data_manager (VALUE self_ruby) {
 }
 
 void Zorba::del (Zorba * zorba) {
-	ZR_DEBUG ("Zorba::del %p\n", zorba);
 	delete zorba;
 }
 
