@@ -50,6 +50,17 @@
 	if (name##_ruby == Qnil) name = NULL; \
 	else Data_Get_Struct (name##_ruby, type, name)
 
+#define ZR_SHADOW_OPT(type, name) \
+	VALUE name##Shadow_ruby; \
+	type * name; \
+	if (name##_ruby = Qnil) { \
+		name##Shadow_ruby = Qnil; \
+		name = NULL; \
+	} else { \
+		name##Shadow_ruby = rb_iv_get (name##_ruby, "@shadow"); \
+		Data_Get_Struct (name##Shadow_ruby, type, name); \
+	}
+
 #define ZR_DEBUG(...) \
 	fprintf (stderr, __VA_ARGS__)
 

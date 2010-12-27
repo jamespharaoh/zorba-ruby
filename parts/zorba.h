@@ -86,23 +86,17 @@ Zorba::Zorba (zorba::Zorba * zorba_zorba) {
 
 VALUE Zorba::compile_query (int argc, VALUE * argv, VALUE self_ruby) {
 
-	VALUE query_ruby, staticContext_ruby;
-	switch (argc) {
-	case 1:
-		query_ruby = argv[0];
-		staticContext_ruby = Qnil;
-		break;
-	case 2:
-		query_ruby = argv[0];
-		staticContext_ruby = argv[1];
-		break;
-	default:
-		rb_raise (rb_eArgError, "Expected 1 or 2 args, got %d", argc);
-	}
+	if (argc < 1 || argc > 3)
+		rb_raise (rb_eArgError, "Expected 1-3 args, got %d", argc);
+
+	VALUE query_ruby = argv [0];
+	VALUE staticContext_ruby = argc >= 2 ? argv [1] : Qnil;
+	VALUE compilerHints_ruby = argc >= 3 ? argv [2] : Qnil;
 
 	ZR_REAL (Zorba, self);
 	zorba::String query_string (StringValueCStr (query_ruby));
 	ZR_REAL_OPT (StaticContext, staticContext);
+	ZR_SHADOW_OPT (CompilerHints, compilerHints);
 
 	zorba::XQuery_t xquery_zorba;
 

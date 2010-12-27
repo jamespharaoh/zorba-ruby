@@ -58,12 +58,9 @@ def example_5 zorba
 end
 
 def example_6 zorba
-	puts "NOT IMPLEMENTED"
-	return true
-
 	hints = Zorba::CompilerHints.new
 	hints.opt_level = Zorba::CompilerHints::ZORBA_OPT_LEVEL_O0
-	query = zorba.compile_query "1 + 1", hints
+	query = zorba.compile_query "1 + 1", nil, hints
 	$stdout.puts query.execute
 	return true
 end

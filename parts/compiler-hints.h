@@ -44,6 +44,7 @@ public:
 	static void del (CompilerHints *);
 
 	static VALUE initialize (VALUE self);
+	static VALUE opt_level_eq (VALUE self, VALUE value);
 };
 
 #endif
@@ -51,7 +52,11 @@ public:
 
 ZR_CLASS_CLASS (Zorba, CompilerHints, rb_cObject)
 
+ZR_CLASS_CONST (CompilerHints, ZORBA_OPT_LEVEL_O0, INT2NUM (ZORBA_OPT_LEVEL_O0))
+ZR_CLASS_CONST (CompilerHints, ZORBA_OPT_LEVEL_O1, INT2NUM (ZORBA_OPT_LEVEL_O1))
+
 ZR_CLASS_METHOD (CompilerHints, initialize, 0)
+ZR_CLASS_METHOD (CompilerHints, opt_level_eq, 1)
 
 #endif
 #ifdef IMPLEMENTATION_PART
@@ -74,6 +79,17 @@ VALUE CompilerHints::initialize (VALUE self_ruby) {
 	rb_iv_set (self_ruby, "@shadow", shadow->shadow ());
 
 	return self_ruby;
+}
+
+VALUE CompilerHints::opt_level_eq (VALUE self_ruby, VALUE value_ruby) {
+
+	VALUE shadow_ruby = rb_iv_get (self_ruby, "@shadow");
+
+	ZR_SHADOW (CompilerHints, self);
+
+	self->zorba ().opt_level = (Zorba_opt_level_t) NUM2INT (value_ruby);
+
+	return Qnil;
 }
 
 void CompilerHints::del (CompilerHints * compilerHints) {
