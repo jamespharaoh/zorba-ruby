@@ -32,18 +32,18 @@ class Zorba {
 	Zorba (zorba::Zorba * zorba_zorba);
 	~Zorba () { }
 
-	set <ZorbaWrapper *> owned;
+	set <ZorbaWrapperOwned <Zorba> *> owned;
 
 public:
 
 	zorba::Zorba * zorba () { return self_zorba; }
 	VALUE ruby () { return self_ruby; }
 
-	void addOwned (ZorbaWrapper * wrapper) {
+	void addOwned (ZorbaWrapperOwned <Zorba> * wrapper) {
 		owned.insert (wrapper);
 	}
 
-	void removeOwned (ZorbaWrapper * wrapper) {
+	void removeOwned (ZorbaWrapperOwned <Zorba> * wrapper) {
 		owned.erase (wrapper);
 	}
 
@@ -114,7 +114,7 @@ VALUE Zorba::compile_query (int argc, VALUE * argv, VALUE self_ruby) {
 	zorba::XQuery_t xquery_zorba;
 
 	if (staticContext) {
-		xquery_zorba = self->zorba ()->compileQuery (query_string, staticContext->zorba_p ());
+		xquery_zorba = self->zorba ()->compileQuery (query_string, staticContext->zorba ());
 	} else {
 		xquery_zorba = self->zorba ()->compileQuery (query_string);
 	}
@@ -175,9 +175,9 @@ VALUE Zorba::shutdown (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 
-	set <ZorbaWrapper *> owned (self->owned);
-	for (set <ZorbaWrapper *>::iterator it = owned.begin (); it != owned.end (); it++)
-		(* it)->unwrap ();
+	set <ZorbaWrapperOwned <Zorba> *> owned (self->owned);
+	for (set <ZorbaWrapperOwned <Zorba> *>::iterator it = owned.begin (); it != owned.end (); it++)
+		(* it)->disown ();
 
 	self->zorba ()->shutdown ();
 

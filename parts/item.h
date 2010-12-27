@@ -19,7 +19,10 @@
 
 #ifdef INTERFACE_PART
 
-class Item : public ZorbaWrapperOwned <zorba::Item> {
+class Item :
+	public ZorbaWrapperOwnedImpl <Zorba, zorba::Item>,
+	public virtual ZorbaWrapperOwned <Zorba>,
+	public virtual ZorbaWrapper {
 
 	virtual ~Item () { }
 
@@ -43,7 +46,7 @@ ZR_CLASS_METHOD (Item, string_value, 0)
 #ifdef IMPLEMENTATION_PART
 
 Item::Item (Zorba * owner) :
-	ZorbaWrapperOwned <zorba::Item> (owner, true, new zorba::Item (), cItem) {
+	ZorbaWrapperOwnedImpl <Zorba, zorba::Item> (owner, true, new zorba::Item (), cItem) {
 }
 
 VALUE Item::string_value (VALUE self_ruby) {

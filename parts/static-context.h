@@ -19,27 +19,13 @@
 
 #ifdef INTERFACE_PART
 
-template <class T>
-class StaticContextCommon : public ZorbaWrapperOwned <T> {
-
-protected:
-
-	StaticContextCommon (Zorba * owner, bool isOwned, T * staticContext_zorba, VALUE rubyClass) :
-		ZorbaWrapperOwned <T> (owner, isOwned, staticContext_zorba, rubyClass) {
-	}
-
-	virtual ~StaticContextCommon () { }
+class StaticContext :
+	public virtual ZorbaWrapperOwned <Zorba>,
+	public virtual ZorbaWrapper {
 
 public:
 
-	virtual zorba::StaticContext * zorba_p () = 0;
-
-	virtual string toString () { return "StaticContext"; }
-};
-
-class StaticContext : public StaticContextCommon <void> {
-
-public:
+	virtual zorba::StaticContext * zorba () = 0;
 
 	static VALUE add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby);
 	static VALUE free (VALUE self_ruby);
@@ -47,25 +33,33 @@ public:
 	static VALUE register_module (VALUE self_ruby, VALUE module_ruby);
 };
 
-class StaticContextCounted : public StaticContextCommon <zorba::StaticContext_t> {
+class StaticContextCounted :
+	public ZorbaWrapperOwnedImpl <Zorba, zorba::StaticContext_t>,
+	public virtual StaticContext {
 
 public:
 
 	StaticContextCounted (Zorba * owner, zorba::StaticContext_t * staticContext_zorba);
 
-	virtual zorba::StaticContext * zorba_p () {
-		return zorba ()->get ();
+	virtual string toString () { return "StaticContextCounted"; }
+
+	virtual zorba::StaticContext * zorba () {
+		return self_zorba->get ();
 	}
 };
 
-class StaticContextRaw : public StaticContextCommon <zorba::StaticContext> {
+class StaticContextRaw :
+	public ZorbaWrapperOwnedImpl <Zorba, zorba::StaticContext>,
+	public virtual StaticContext {
 
 public:
 
 	StaticContextRaw (Zorba * owner, zorba::StaticContext * staticContext_zorba);
 
-	virtual zorba::StaticContext * zorba_p () {
-		return zorba ();
+	virtual string toString () { return "StaticContextRaw"; }
+
+	virtual zorba::StaticContext * zorba () {
+		return self_zorba;
 	}
 };
 
@@ -83,11 +77,11 @@ ZR_CLASS_METHOD (StaticContext, register_module, 1)
 #ifdef IMPLEMENTATION_PART
 
 StaticContextCounted::StaticContextCounted (Zorba * owner, zorba::StaticContext_t * staticContext_zorba) :
-	StaticContextCommon <zorba::StaticContext_t> (owner, true, staticContext_zorba, cStaticContext) {
+	ZorbaWrapperOwnedImpl <Zorba, zorba::StaticContext_t> (owner, true, staticContext_zorba, cStaticContext) {
 }
 
 StaticContextRaw::StaticContextRaw (Zorba * owner, zorba::StaticContext * staticContext_zorba) :
-	StaticContextCommon <zorba::StaticContext> (owner, false, staticContext_zorba, cStaticContext) {
+	ZorbaWrapperOwnedImpl <Zorba, zorba::StaticContext> (owner, false, staticContext_zorba, cStaticContext) {
 }
 
 VALUE StaticContext::add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby) {
@@ -98,7 +92,7 @@ VALUE StaticContext::add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriRe
 
 	ZR_REAL (ModuleUriResolver, moduleUriResolverZorba);
 
-	self->zorba_p ()->addModuleURIResolver (moduleUriResolverZorba);
+	self->zorba ()->addModuleURIResolver (moduleUriResolverZorba);
 
 	return Qnil;
 }
@@ -107,7 +101,7 @@ VALUE StaticContext::free (VALUE self_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
-	self->zorba_p ()->free ();
+	self->zorba ()->free ();
 
 	return Qnil;
 }
@@ -118,7 +112,7 @@ VALUE StaticContext::load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hint
 	const char * prolog = StringValueCStr (prolog_ruby);
 	ZR_SHADOW (CompilerHints, hints);
 
-	self->zorba_p ()->loadProlog (zorba::String (prolog), hints->zorba ());
+	self->zorba ()->loadProlog (zorba::String (prolog), hints->zorba ());
 }
 
 VALUE StaticContext::register_module (VALUE self_ruby, VALUE module_ruby) {
@@ -126,9 +120,9 @@ VALUE StaticContext::register_module (VALUE self_ruby, VALUE module_ruby) {
 	ZR_REAL (StaticContext, self);
 
 	ExternalModuleWrapper * module =
-		new ExternalModuleWrapper (self->owner, module_ruby);
+		new ExternalModuleWrapper (self->owner (), module_ruby);
 
-	self->zorba_p ()->registerModule (module);
+	self->zorba ()->registerModule (module);
 
 	return Qnil;
 }
