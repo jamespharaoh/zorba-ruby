@@ -135,6 +135,12 @@ public:
 
 		owner_val->removeOwned (this);
 	}
+
+	static Wrapper * unwrap (VALUE self_ruby) {
+		Wrapper * self;
+		Data_Get_Struct (self_ruby, Wrapper, self);
+		return self;
+	}
 };
 
 #endif

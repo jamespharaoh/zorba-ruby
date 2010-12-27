@@ -43,8 +43,6 @@ ZR_CLASS_EXCEP (Zorba, UserException, eQueryException)
 
 void zr_raise (const zorba::ZorbaException & zorbaException) {
 
-ZR_DEBUG ("raising...\n");
-
 	if (RTEST (currentException)) {
 		VALUE currentExceptionTemp = currentException;
 		currentException = Qnil;

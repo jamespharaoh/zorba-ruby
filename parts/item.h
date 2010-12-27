@@ -20,7 +20,8 @@
 #ifdef INTERFACE_PART
 
 class Item :
-	public ZorbaWrapperOwnedImpl <Item, zorba::Item> {
+	public ZorbaWrapperOwnedImpl <Item, zorba::Item>,
+	public virtual ZorbaWrapperOwner {
 
 	virtual ~Item () { }
 
@@ -30,7 +31,11 @@ public:
 
 	virtual string toString () { return "Item"; }
 
+	static VALUE attributes (VALUE self_ruby);
+	static VALUE children (VALUE self_ruby);
+	static VALUE node_name (VALUE self_ruby);
 	static VALUE string_value (VALUE self_ruby);
+	static VALUE to_s (VALUE self_ruby) { return string_value (self_ruby); }
 };
 
 #endif
@@ -38,13 +43,52 @@ public:
 
 ZR_CLASS_CLASS (Zorba, Item, rb_cObject)
 
+ZR_CLASS_METHOD (Item, attributes, 0)
+ZR_CLASS_METHOD (Item, children, 0)
+ZR_CLASS_METHOD (Item, node_name, 0)
 ZR_CLASS_METHOD (Item, string_value, 0)
+ZR_CLASS_METHOD (Item, to_s, 0)
 
 #endif
 #ifdef IMPLEMENTATION_PART
 
 Item::Item (ZorbaWrapperOwner * owner) :
 	ZorbaWrapperOwnedImpl <Item, zorba::Item> (owner, true, new zorba::Item (), cItem) {
+}
+
+VALUE Item::attributes (VALUE self_ruby) {
+
+	Item * self = Item::unwrap (self_ruby);
+
+	Iterator * iterator = new Iterator (self);
+
+	iterator->zorba () = self->zorba ()->getAttributes ();
+
+	return iterator->ruby ();
+}
+
+VALUE Item::children (VALUE self_ruby) {
+
+	Item * self = Item::unwrap (self_ruby);
+
+	Iterator * iterator = new Iterator (self);
+
+	iterator->zorba () = self->zorba ()->getChildren ();
+
+	return iterator->ruby ();
+}
+
+VALUE Item::node_name (VALUE self_ruby) {
+
+	Item * self = Item::unwrap (self_ruby);
+
+	Item * nodeName = new Item (self);
+
+	bool ret = self->zorba ()->getNodeName (* nodeName->zorba ());
+
+	if (! ret) return Qnil;
+
+	return nodeName->ruby ();
 }
 
 VALUE Item::string_value (VALUE self_ruby) {

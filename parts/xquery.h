@@ -38,6 +38,7 @@ public:
 	static VALUE execute (VALUE self_ruby);
 	static VALUE iterator (VALUE self_ruby);
 	static VALUE filename_eq (VALUE self_ruby, VALUE value_ruby);
+	static VALUE timeout_eq (VALUE self_ruby, VALUE value_ruby);
 
 	static void mark (XQuery * xquery);
 	static void del (XQuery * xquery);
@@ -53,8 +54,9 @@ ZR_CLASS_METHOD (XQuery, close, 0)
 ZR_CLASS_METHOD (XQuery, compile, 1)
 ZR_CLASS_METHOD (XQuery, dynamic_context, 0)
 ZR_CLASS_METHOD (XQuery, execute, 0)
-ZR_CLASS_METHOD (XQuery, iterator, 0)
 ZR_CLASS_METHOD (XQuery, filename_eq, 1)
+ZR_CLASS_METHOD (XQuery, iterator, 0)
+ZR_CLASS_METHOD (XQuery, timeout_eq, 1)
 
 #endif
 #ifdef IMPLEMENTATION_PART
@@ -133,6 +135,15 @@ VALUE XQuery::filename_eq (VALUE self_ruby, VALUE value_ruby) {
 	ZR_REAL (XQuery, self);
 
 	self->zorba ()->setFileName (StringValueCStr (value_ruby));
+
+	return Qnil;
+}
+
+VALUE XQuery::timeout_eq (VALUE self_ruby, VALUE value_ruby) {
+
+	ZR_REAL (XQuery, self);
+
+	self->zorba ()->setTimeout (NUM2INT (value_ruby));
 
 	return Qnil;
 }

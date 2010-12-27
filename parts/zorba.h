@@ -168,11 +168,9 @@ VALUE Zorba::shutdown (VALUE self_ruby) {
 
 	ZR_REAL (Zorba, self);
 
-ZR_DEBUG ("and....\n");
 	self->disownOwned ();
 
 	self->zorba ()->shutdown ();
-ZR_DEBUG ("shutdown!\n");
 
 	return Qnil;
 }
