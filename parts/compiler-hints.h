@@ -24,9 +24,9 @@ class CompilerHints :
 
 	CompilerHints (VALUE caster_ruby);
 
-	virtual ~CompilerHints () { }
-
 public:
+
+	virtual ~CompilerHints () { }
 
 	virtual string toString () { return "CompilerHints"; }
 
@@ -52,7 +52,7 @@ ZR_CLASS_METHOD (CompilerHints, opt_level_eq, 1)
 
 CompilerHints::CompilerHints (VALUE caster_ruby) :
 	ZorbaWrapperShadowImpl <CompilerHints, Zorba_CompilerHints_t> (
-		caster_ruby, new Zorba_CompilerHints_t (), cCompilerHints) {
+		caster_ruby, (CompilerHints *) this, new Zorba_CompilerHints_t (), cCompilerHints) {
 }
 
 VALUE CompilerHints::initialize (VALUE self_ruby) {

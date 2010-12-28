@@ -63,7 +63,7 @@ ZR_CLASS_METHOD (ModuleUriResolverResult, initialize, 0);
 
 ModuleUriResolverResult::ModuleUriResolverResult (VALUE caster_ruby) :
 	ZorbaWrapperShadowImpl <ModuleUriResolverResult, zorba::URIResolverResult> (
-		caster_ruby, new zorba::URIResolverResult (), cModuleUriResolverResult) {
+		caster_ruby, (ModuleUriResolverResult *) this, new zorba::URIResolverResult (), cModuleUriResolverResult) {
 }
 
 VALUE ModuleUriResolverResult::initialize (VALUE self_ruby) {

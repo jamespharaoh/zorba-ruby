@@ -43,9 +43,9 @@ class ModuleUriResolver :
 
 	ModuleUriResolver (VALUE);
 
-	virtual ~ModuleUriResolver () { }
-
 public:
+
+	virtual ~ModuleUriResolver () { }
 
 	zorba::ModuleURIResolver * delegate () {
 		return new Delegate (this);
@@ -68,7 +68,7 @@ ZR_CLASS_METHOD (ModuleUriResolver, initialize, 0)
 
 ModuleUriResolver::ModuleUriResolver (VALUE caster_ruby) :
 	ZorbaWrapperShadowImpl <ModuleUriResolver, zorba::ModuleURIResolver> (
-		caster_ruby, NULL, cModuleUriResolver) {
+		caster_ruby, (ModuleUriResolver *) this, NULL, cModuleUriResolver) {
 }
 
 VALUE ModuleUriResolver::initialize (VALUE self_ruby) {

@@ -23,10 +23,14 @@ class StatelessExternalFunction {
 
 public:
 
+	virtual ~StatelessExternalFunction () { }
+
 	virtual zorba::StatelessExternalFunction * delegate (ZorbaWrapperOwner *) = 0;
 };
 
-class NonePureStatelessExternalFunction : public StatelessExternalFunction {
+class NonePureStatelessExternalFunction :
+	public ZorbaWrapperShadowImpl <StatelessExternalFunction, void>,
+	public virtual StatelessExternalFunction {
 
 	class Delegate : public zorba::NonePureStatelessExternalFunction {
 
@@ -51,26 +55,19 @@ class NonePureStatelessExternalFunction : public StatelessExternalFunction {
 			const zorba::DynamicContext *) const;
 	};
 
-	VALUE caster_ruby;
-	VALUE shadow_ruby;
-
-	~NonePureStatelessExternalFunction () { }
+	NonePureStatelessExternalFunction (VALUE caster_ruby);
 
 public:
 
-	NonePureStatelessExternalFunction (VALUE caster_ruby);
+	virtual ~NonePureStatelessExternalFunction () { }
 
-	VALUE caster () { return caster_ruby; }
-	VALUE shadow () { return shadow_ruby; }
+	virtual string toString () { return "NonePureStatelessExternalFunction"; }
 
 	virtual zorba::NonePureStatelessExternalFunction * delegate (ZorbaWrapperOwner * owner) {
 		return new Delegate (owner, this);
 	}
 
 	static VALUE initialize (VALUE self_ruby);
-
-	static void mark (NonePureStatelessExternalFunction *);
-	static void del (NonePureStatelessExternalFunction *);
 };
 
 #endif
@@ -83,11 +80,9 @@ ZR_CLASS_METHOD (NonePureStatelessExternalFunction, initialize, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-NonePureStatelessExternalFunction::NonePureStatelessExternalFunction (VALUE caster_ruby) {
-
-	this->caster_ruby = caster_ruby;
-
-	shadow_ruby = Data_Wrap_Struct (cNonePureStatelessExternalFunction, mark, del, this);
+NonePureStatelessExternalFunction::NonePureStatelessExternalFunction (VALUE caster_ruby) :
+	ZorbaWrapperShadowImpl <StatelessExternalFunction, void> (
+		caster_ruby, (StatelessExternalFunction *) this, NULL, cNonePureStatelessExternalFunction) {
 }
 
 VALUE NonePureStatelessExternalFunction::initialize (VALUE self_ruby) {
@@ -130,13 +125,6 @@ zorba::ItemSequence_t NonePureStatelessExternalFunction::Delegate::evaluate (
 	ZR_REAL (zorba::ItemSequence_t, itemSequence);
 
 	return * itemSequence;
-}
-
-void NonePureStatelessExternalFunction::mark (NonePureStatelessExternalFunction * nonePureStatelessExternalFunction) {
-}
-
-void NonePureStatelessExternalFunction::del (NonePureStatelessExternalFunction * nonePureStatelessExternalFunction) {
-	delete nonePureStatelessExternalFunction;
 }
 
 #endif

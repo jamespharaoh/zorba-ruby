@@ -40,13 +40,11 @@ class ExternalModule :
 		virtual zorba::String getURI () const;
 	};
 
-protected:
-
-	virtual ~ExternalModule () { }
+	ExternalModule (VALUE caster_ruby);
 
 public:
 
-	ExternalModule (VALUE caster_ruby);
+	virtual ~ExternalModule () { }
 
 	virtual string toString () { return "ExternalModule"; }
 
@@ -69,7 +67,7 @@ ZR_CLASS_METHOD (ExternalModule, initialize, 0)
 
 ExternalModule::ExternalModule (VALUE self_ruby) :
 	ZorbaWrapperShadowImpl <ExternalModule, zorba::ExternalModule> (
-		self_ruby, NULL, cExternalModule) {
+		self_ruby, (ExternalModule *) this, NULL, cExternalModule) {
 }
 
 VALUE ExternalModule::initialize (VALUE self_ruby) {
@@ -85,17 +83,15 @@ VALUE ExternalModule::initialize (VALUE self_ruby) {
 zorba::StatelessExternalFunction * ExternalModule::Delegate::getExternalFunction (
 		zorba::String localName) const {
 
-	VALUE ret = zr_funcall (
+	VALUE ret_ruby = zr_funcall (
 		target->caster (),
 		rb_intern ("external_function"),
 		1,
 		rb_str_new2 (localName.c_str ()));
 
-	VALUE shadow_ruby = rb_iv_get (ret, "@shadow");
+	ZR_SHADOW (StatelessExternalFunction, ret);
 
-	ZR_REAL (StatelessExternalFunction, shadow);
-
-	return shadow->delegate (owner_val);
+	return ret->delegate (owner_val);
 }
 
 zorba::String ExternalModule::Delegate::getURI () const {

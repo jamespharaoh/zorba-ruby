@@ -190,7 +190,7 @@ class ZorbaWrapperShadowImpl :
 	static void delete_static (Wrapper * self) {
 		try {
 
-			delete (ZorbaWrapperShadowImpl <Wrapper, Wrapped> *) self;
+			delete self;
 
 		}
 		catch (zorba::ZorbaException & e) { zr_raise (e); }
@@ -204,13 +204,13 @@ protected:
 	VALUE caster_ruby;
 	VALUE shadow_ruby;
 
-	ZorbaWrapperShadowImpl (VALUE caster_ruby_arg, Wrapped * self_zorba, VALUE rubyClass) {
+	ZorbaWrapperShadowImpl (VALUE caster_ruby_arg, Wrapper * self, Wrapped * self_zorba, VALUE rubyClass) {
 
 		this->self_zorba = self_zorba;
 
 		caster_ruby = caster_ruby_arg;
 
-		shadow_ruby = Data_Wrap_Struct (rubyClass, mark_static, delete_static, (Wrapper *) this);
+		shadow_ruby = Data_Wrap_Struct (rubyClass, mark_static, delete_static, self);
 	}
 
 	virtual ~ZorbaWrapperShadowImpl () {
