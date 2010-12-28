@@ -19,26 +19,16 @@
 
 #ifdef INTERFACE_PART
 
-class ItemFactory {
+class ItemFactory :
+	public ZorbaWrapperOwnedImpl <ItemFactory, zorba::ItemFactory> {
 
-	Zorba * owner;
-
-	zorba::ItemFactory * self_zorba;
-	VALUE self_ruby;
-
-	set <Item *> items;
-
-	~ItemFactory () { }
-
-	static void mark (ItemFactory *);
-	static void del (ItemFactory *);
+	virtual ~ItemFactory () { }
 
 public:
 
-	ItemFactory (Zorba * owner, zorba::ItemFactory *);
+	ItemFactory (ZorbaWrapperOwner * owner, zorba::ItemFactory *);
 
-	zorba::ItemFactory * zorba () { return self_zorba; }
-	VALUE ruby () { return self_ruby; }
+	virtual string toString () { return "ItemFactory"; }
 
 	static VALUE create_element_node (VALUE, VALUE, VALUE, VALUE, VALUE, VALUE, VALUE);
 	static VALUE create_integer (VALUE self_ruby, VALUE integer_ruby);
@@ -59,24 +49,8 @@ ZR_CLASS_METHOD (ItemFactory, create_string, 1);
 #endif
 #ifdef IMPLEMENTATION_PART
 
-void ItemFactory::mark (ItemFactory * itemFactory) {
-}
-
-void ItemFactory::del (ItemFactory * itemFactory) {
-	delete itemFactory;
-}
-
-ItemFactory::ItemFactory (Zorba * owner, zorba::ItemFactory * itemFactory_zorba) {
-
-	this->owner = owner;
-
-	self_zorba = itemFactory_zorba;
-
-	self_ruby = Data_Wrap_Struct (
-		cItemFactory,
-		ItemFactory::mark,
-		ItemFactory::del,
-		this);
+ItemFactory::ItemFactory (ZorbaWrapperOwner * owner, zorba::ItemFactory * itemFactory_zorba) :
+	ZorbaWrapperOwnedImpl <ItemFactory, zorba::ItemFactory> (owner, false, itemFactory_zorba, cItemFactory) {
 }
 
 VALUE ItemFactory::create_element_node (
@@ -95,7 +69,7 @@ VALUE ItemFactory::create_element_node (
 
 	zorba::Item null_zorba;
 
-	Item * item = new Item (self->owner);
+	Item * item = new Item (self->owner ());
 
 	* item->zorba () = self->zorba ()->createElementNode (
 		parent ? * parent->zorba () : null_zorba,
@@ -112,7 +86,7 @@ VALUE ItemFactory::create_integer (VALUE self_ruby, VALUE integer_ruby) {
 
 	ZR_REAL (ItemFactory, self);
 
-	Item * item = new Item (self->owner);
+	Item * item = new Item (self->owner ());
 
 	* item->zorba () = self->zorba ()->createInteger (NUM2ULONG (integer_ruby));
 
@@ -123,7 +97,7 @@ VALUE ItemFactory::create_qname (VALUE self_ruby, VALUE ns_ruby, VALUE localName
 
 	ZR_REAL (ItemFactory, self);
 
-	Item * item = new Item (self->owner);
+	Item * item = new Item (self->owner ());
 
 	* item->zorba () = self->zorba ()->createQName (RSTRING (ns_ruby)->ptr, RSTRING (localName_ruby)->ptr);
 
@@ -134,7 +108,7 @@ VALUE ItemFactory::create_string (VALUE self_ruby, VALUE str_ruby) {
 
 	ZR_REAL (ItemFactory, self);
 
-	Item * item = new Item (self->owner);
+	Item * item = new Item (self->owner ());
 
 	* item->zorba () = self->zorba ()->createString (RSTRING (str_ruby)->ptr);
 
