@@ -74,6 +74,43 @@ public:
 };
 
 template <class Wrapper, class Wrapped>
+class ZorbaWrapperBasicImpl :
+	public virtual ZorbaWrapper {
+
+	static void mark_static (Wrapper * self) {
+	}
+
+	static void delete_static (Wrapper * self) {
+		try {
+
+			delete (ZorbaWrapperBasicImpl <Wrapper, Wrapped> *) self;
+		}
+		catch (zorba::ZorbaException & e) { zr_raise (e); }
+		catch (RubyException & e) { zr_raise (e); }
+	}
+
+protected:
+
+	Wrapped * self_zorba;
+	VALUE self_ruby;
+
+	ZorbaWrapperBasicImpl (Wrapped * self_zorba_arg, VALUE rubyClass) {
+
+		self_zorba = self_zorba_arg;
+
+		self_ruby = Data_Wrap_Struct (rubyClass, mark_static, delete_static, (Wrapper *) this);
+	}
+
+	virtual ~ZorbaWrapperBasicImpl () {
+	}
+
+public:
+
+	Wrapped * zorba () { return self_zorba; }
+	VALUE ruby () { return self_ruby; }
+};
+
+template <class Wrapper, class Wrapped>
 class ZorbaWrapperOwnedImpl : public virtual ZorbaWrapperOwned, public virtual ZorbaWrapper {
 
 	static void mark_static (Wrapper * self) {

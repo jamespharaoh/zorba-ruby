@@ -19,24 +19,18 @@
 
 #ifdef INTERFACE_PART
 
-class DynamicContext {
+class DynamicContext :
+	public ZorbaWrapperBasicImpl <DynamicContext, zorba::DynamicContext> {
 
-	zorba::DynamicContext * self_zorba;
-	VALUE self_ruby;
-
-	~DynamicContext () { }
+	virtual ~DynamicContext () { }
 
 public:
 
 	DynamicContext (zorba::DynamicContext *);
 
-	zorba::DynamicContext * zorba () { return self_zorba; }
-	VALUE ruby () { return self_ruby; }
+	virtual string toString () { return "DynamicContext"; }
 
 	static VALUE set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE item_ruby);
-
-	static void mark (DynamicContext *);
-	static void del (DynamicContext *);
 };
 
 #endif
@@ -49,15 +43,9 @@ ZR_CLASS_METHOD (DynamicContext, set_variable, 2)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-DynamicContext::DynamicContext (zorba::DynamicContext * dynamicContext_zorba) {
-
-	self_zorba = dynamicContext_zorba;
-
-	self_ruby = Data_Wrap_Struct (
-		cDynamicContext,
-		DynamicContext::mark,
-		DynamicContext::del,
-		this);
+DynamicContext::DynamicContext (zorba::DynamicContext * dynamicContext_zorba) :
+	ZorbaWrapperBasicImpl <DynamicContext, zorba::DynamicContext> (
+		dynamicContext_zorba, cDynamicContext) {
 }
 
 VALUE DynamicContext::set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE item_ruby) {
@@ -70,13 +58,6 @@ VALUE DynamicContext::set_variable (VALUE self_ruby, VALUE qname_ruby, VALUE ite
 		* item->zorba ());
 
 	return Qnil;
-}
-
-void DynamicContext::del (DynamicContext * dynamicContext) {
-	delete dynamicContext;
-}
-
-void DynamicContext::mark (DynamicContext * dynamicContext) {
 }
 
 #endif
