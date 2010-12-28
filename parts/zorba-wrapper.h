@@ -143,6 +143,48 @@ public:
 	}
 };
 
+template <class Wrapper, class Wrapped>
+class ZorbaWrapperShadowImpl :
+	public virtual ZorbaWrapper {
+
+	static void mark_static (Wrapper * self) {
+	}
+
+	static void delete_static (Wrapper * self) {
+		try {
+
+			delete (ZorbaWrapperShadowImpl <Wrapper, Wrapped> *) self;
+
+		}
+		catch (zorba::ZorbaException & e) { zr_raise (e); }
+		catch (RubyException & e) { zr_raise (e); }
+	}
+
+protected:
+
+	Wrapped * self_zorba;
+
+	VALUE caster_ruby;
+	VALUE shadow_ruby;
+
+	ZorbaWrapperShadowImpl (VALUE caster_ruby_arg, Wrapped * self_zorba, VALUE rubyClass) {
+
+		this->self_zorba = self_zorba;
+
+		caster_ruby = caster_ruby_arg;
+
+		shadow_ruby = Data_Wrap_Struct (rubyClass, mark_static, delete_static, (Wrapper *) this);
+	}
+
+	virtual ~ZorbaWrapperShadowImpl () {
+	}
+
+public:
+
+	VALUE shadow () { return shadow_ruby; }
+	VALUE caster () { return caster_ruby; }
+};
+
 #endif
 #ifdef IMPLEMENTATION_PART
 

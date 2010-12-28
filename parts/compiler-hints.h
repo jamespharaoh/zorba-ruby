@@ -19,29 +19,18 @@
 
 #ifdef INTERFACE_PART
 
-class CompilerHints {
+class CompilerHints :
+	public ZorbaWrapperShadowImpl <CompilerHints, Zorba_CompilerHints_t> {
 
-	Zorba_CompilerHints_t self_zorba;
+	CompilerHints (VALUE caster_ruby);
 
-	VALUE shadow_ruby;
-
-	VALUE caster_ruby;
-
-	CompilerHints (VALUE compilerHints_ruby);
-
-	~CompilerHints () { }
+	virtual ~CompilerHints () { }
 
 public:
 
-	Zorba_CompilerHints_t & zorba () { return self_zorba; }
+	virtual string toString () { return "CompilerHints"; }
 
-	VALUE shadow () { return shadow_ruby; }
-
-	VALUE caster () { return caster_ruby; }
-
-	static void mark (CompilerHints *);
-
-	static void del (CompilerHints *);
+	Zorba_CompilerHints_t & zorba () { return * self_zorba; }
 
 	static VALUE initialize (VALUE self);
 	static VALUE opt_level_eq (VALUE self, VALUE value);
@@ -61,15 +50,9 @@ ZR_CLASS_METHOD (CompilerHints, opt_level_eq, 1)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-CompilerHints::CompilerHints (VALUE compilerHints_ruby) {
-
-	caster_ruby = compilerHints_ruby;
-
-	shadow_ruby = Data_Wrap_Struct (
-		cCompilerHints,
-		CompilerHints::mark,
-		CompilerHints::del,
-		this);
+CompilerHints::CompilerHints (VALUE caster_ruby) :
+	ZorbaWrapperShadowImpl <CompilerHints, Zorba_CompilerHints_t> (
+		caster_ruby, new Zorba_CompilerHints_t (), cCompilerHints) {
 }
 
 VALUE CompilerHints::initialize (VALUE self_ruby) {
@@ -90,13 +73,6 @@ VALUE CompilerHints::opt_level_eq (VALUE self_ruby, VALUE value_ruby) {
 	self->zorba ().opt_level = (Zorba_opt_level_t) NUM2INT (value_ruby);
 
 	return Qnil;
-}
-
-void CompilerHints::del (CompilerHints * compilerHints) {
-	delete compilerHints;
-}
-
-void CompilerHints::mark (CompilerHints * compilerHints) {
 }
 
 #endif
