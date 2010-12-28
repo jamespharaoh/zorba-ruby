@@ -220,6 +220,13 @@ public:
 
 	VALUE shadow () { return shadow_ruby; }
 	VALUE caster () { return caster_ruby; }
+
+	static Wrapper * unwrap (VALUE caster_ruby) {
+		VALUE shadow_ruby = rb_iv_get (caster_ruby, "@shadow");
+		Wrapper * self;
+		Data_Get_Struct (shadow_ruby, Wrapper, self);
+		return self;
+	}
 };
 
 #endif

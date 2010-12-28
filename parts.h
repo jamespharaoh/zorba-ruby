@@ -55,7 +55,7 @@
 
 #include "parts/compiler-hints.h"
 #include "parts/dynamic-context.h"
-#include "parts/external-module-wrapper.h"
+#include "parts/external-module.h"
 #include "parts/item.h"
 #include "parts/item-factory.h"
 #include "parts/iterator.h"

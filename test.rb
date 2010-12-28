@@ -63,7 +63,7 @@ class MyModuleUriResolver < Zorba::ModuleUriResolver
 	end
 end
 
-class MyModule
+class MyModule < Zorba::ExternalModule
 
 	def uri
 		return "lib"

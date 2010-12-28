@@ -117,11 +117,9 @@ VALUE StaticContext::load_prolog (VALUE self_ruby, VALUE prolog_ruby, VALUE hint
 VALUE StaticContext::register_module (VALUE self_ruby, VALUE module_ruby) {
 
 	ZR_REAL (StaticContext, self);
+	ExternalModule * module = ExternalModule::unwrap (module_ruby);
 
-	ExternalModuleWrapper * module =
-		new ExternalModuleWrapper (self->owner (), module_ruby);
-
-	self->zorba ()->registerModule (module);
+	self->zorba ()->registerModule (module->delegate (self->owner ()));
 
 	return Qnil;
 }
