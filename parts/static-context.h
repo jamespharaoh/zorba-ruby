@@ -83,15 +83,13 @@ StaticContextRaw::StaticContextRaw (ZorbaWrapperOwner * owner, zorba::StaticCont
 	ZorbaWrapperOwnedImpl <StaticContext, zorba::StaticContext> (owner, false, staticContext_zorba, cStaticContext) {
 }
 
-VALUE StaticContext::add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolverRuby_ruby) {
+VALUE StaticContext::add_module_uri_resolver (VALUE self_ruby, VALUE moduleUriResolver_ruby) {
 
 	ZR_REAL (StaticContext, self);
 
-	VALUE moduleUriResolverZorba_ruby = rb_iv_get (moduleUriResolverRuby_ruby, "@shadow");
+	ZR_SHADOW (ModuleUriResolver, moduleUriResolver);
 
-	ZR_REAL (ModuleUriResolver, moduleUriResolverZorba);
-
-	self->zorba ()->addModuleURIResolver (moduleUriResolverZorba);
+	self->zorba ()->addModuleURIResolver (moduleUriResolver->delegate ());
 
 	return Qnil;
 }

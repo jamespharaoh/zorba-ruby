@@ -19,32 +19,41 @@
 
 #ifdef INTERFACE_PART
 
-class ModuleUriResolver : public zorba::ModuleURIResolver {
+class ModuleUriResolver :
+	public ZorbaWrapperShadowImpl <ModuleUriResolver, zorba::ModuleURIResolver> {
 
-	VALUE self_ruby;
-	VALUE shadow_ruby;
+	class Delegate : public zorba::ModuleURIResolver {
+
+		ModuleUriResolver * target;
+
+	public:
+
+		Delegate (ModuleUriResolver * target_arg) {
+			target = target_arg;
+		}
+
+		auto_ptr <zorba::ModuleURIResolverResult> resolveTargetNamespace (
+			const zorba::String & targetNamespaceURI,
+			const zorba::StaticContext& staticContext);
+
+		auto_ptr <zorba::ModuleURIResolverResult> resolve (
+			const zorba::String& uri,
+			const zorba::StaticContext& staticContext);
+	};
 
 	ModuleUriResolver (VALUE);
-	~ModuleUriResolver () { }
+
+	virtual ~ModuleUriResolver () { }
 
 public:
 
-	VALUE ruby () { return self_ruby; }
+	zorba::ModuleURIResolver * delegate () {
+		return new Delegate (this);
+	}
 
-	VALUE shadow () { return shadow_ruby; }
-
-	auto_ptr <zorba::ModuleURIResolverResult> resolveTargetNamespace (
-		const zorba::String & targetNamespaceURI,
-		const zorba::StaticContext& staticContext);
-
-	auto_ptr <zorba::ModuleURIResolverResult> resolve (
-		const zorba::String& uri,
-		const zorba::StaticContext& staticContext);
+	virtual string toString () { return "ModuleUriResolver"; }
 
 	static VALUE initialize (VALUE self);
-
-	static void mark (ModuleUriResolver *);
-	static void del (ModuleUriResolver *);
 };
 
 #endif
@@ -57,32 +66,26 @@ ZR_CLASS_METHOD (ModuleUriResolver, initialize, 0)
 #endif
 #ifdef IMPLEMENTATION_PART
 
-ModuleUriResolver::ModuleUriResolver (VALUE shadow_ruby) {
-
-	this->shadow_ruby = shadow_ruby;
-
-	self_ruby = Data_Wrap_Struct (
-		cModuleUriResolver,
-		ModuleUriResolver::mark,
-		ModuleUriResolver::del,
-		this);
+ModuleUriResolver::ModuleUriResolver (VALUE caster_ruby) :
+	ZorbaWrapperShadowImpl <ModuleUriResolver, zorba::ModuleURIResolver> (
+		caster_ruby, NULL, cModuleUriResolver) {
 }
 
 VALUE ModuleUriResolver::initialize (VALUE self_ruby) {
 
-	ModuleUriResolver * selfZorba = new ModuleUriResolver (self_ruby);
+	ModuleUriResolver * self = new ModuleUriResolver (self_ruby);
 
-	rb_iv_set (self_ruby, "@shadow", selfZorba->ruby ());
+	rb_iv_set (self_ruby, "@shadow", self->shadow ());
 
 	return self_ruby;
 }
 
-auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::resolveTargetNamespace (
+auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::Delegate::resolveTargetNamespace (
 		const zorba::String & targetNamespaceURI,
 		const zorba::StaticContext& staticContext) {
 
 	VALUE retRuby_ruby = zr_funcall (
-		shadow_ruby,
+		target->caster (),
 		rb_intern ("resolve_target_namespace"),
 		1,
 		rb_str_new2 (targetNamespaceURI.c_str ()));
@@ -93,12 +96,12 @@ auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::resolveTargetNamesp
 	return auto_ptr <zorba::ModuleURIResolverResult> (retZorba);
 }
 
-auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::resolve (
+auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::Delegate::resolve (
 		const zorba::String& uri,
 		const zorba::StaticContext& staticContext) {
 
 	VALUE ret_ruby = zr_funcall (
-		shadow_ruby,
+		target->caster (),
 		rb_intern ("resolve"),
 		1,
 		rb_str_new2 (uri.c_str ()));
@@ -107,13 +110,6 @@ auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::resolve (
 	ZR_REAL (zorba::ModuleURIResolverResult, retShadow);
 
 	return auto_ptr <zorba::ModuleURIResolverResult> (retShadow);
-}
-
-void ModuleUriResolver::del (ModuleUriResolver * moduleUriResolver) {
-	delete moduleUriResolver;
-}
-
-void ModuleUriResolver::mark (ModuleUriResolver * moduleUriResolver) {
 }
 
 #endif
