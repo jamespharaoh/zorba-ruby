@@ -153,7 +153,7 @@ def example_12 zorba
 		child_iter.close
 	end
 
-	iterator.close;
+	iterator.close
 
 	return true
 end
@@ -175,8 +175,8 @@ end
 
 def example_14 zorba
 	str = "a"
-	str += "b";
-	str += "c";
+	str += "b"
+	str += "c"
 	return str == "abc"
 end
 
@@ -185,7 +185,7 @@ begin
 	store = Zorba::StoreManager.get_store
 	zorba = Zorba::get_instance store
 
-	(1..13).each do |i|
+	(1..14).each do |i|
 		puts "executing example #{i}"
 		send "example_#{i}", zorba or exit 1
 	end
