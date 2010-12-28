@@ -19,50 +19,33 @@
 
 #ifdef INTERFACE_PART
 
-class ModuleUriResolverResult : public zorba::ModuleURIResolverResult {
+class ModuleUriResolverResult :
+	public ZorbaWrapperShadowImpl <ModuleUriResolverResult, zorba::URIResolverResult> {
+
+	class Delegate :
+		public zorba::ModuleURIResolverResult {
+
+		ModuleUriResolverResult * target;
+
+	public:
+
+		Delegate (ModuleUriResolverResult * target_arg) {
+			target = target_arg;
+		}
+
+		virtual std::istream * getModuleStream () const;
+		virtual void getModuleURL (string & moduleUrl) const;
+		virtual void getComponentURIs (vector <string> & componentUris) const;
+	};
 
 public:
 
-	VALUE shadow;
+	ModuleUriResolverResult (VALUE caster_ruby);
 
-	ModuleUriResolverResult (VALUE shadow) {
-		this->shadow = shadow;
-	}
+	virtual string toString () { return "ModuleUriResolverResult"; }
 
-	virtual std::istream* getModuleStream () const {
-
-		VALUE ret = zr_funcall (
-			shadow,
-			rb_intern ("module_source"),
-			0);
-
-		auto_ptr<basic_istringstream<char> > in (
-			new basic_istringstream<char> (StringValueCStr (ret)));
-
-		return in.release ();
-	}
-
-	virtual void getModuleURL (string& moduleUrl) const {
-
-		VALUE ret = zr_funcall (
-			shadow,
-			rb_intern ("module_url"),
-			0);
-
-		moduleUrl = StringValueCStr (ret);
-	}
-
-	virtual void getComponentURIs (vector<string>& componentUris) const {
-
-		VALUE ret = zr_funcall (
-			shadow,
-			rb_intern ("component_uris"),
-			0);
-
-		for (int i = 0; i < RARRAY (ret)->len; i++) {
-			VALUE item = RARRAY (ret)->ptr [i];
-			componentUris.push_back (StringValueCStr (item));
-		}
+	zorba::ModuleURIResolverResult * delegate () {
+		return new Delegate (this);
 	}
 
 	static VALUE initialize (VALUE self);
@@ -78,14 +61,54 @@ ZR_CLASS_METHOD (ModuleUriResolverResult, initialize, 0);
 #endif
 #ifdef IMPLEMENTATION_PART
 
-VALUE ModuleUriResolverResult::initialize (VALUE self) {
+ModuleUriResolverResult::ModuleUriResolverResult (VALUE caster_ruby) :
+	ZorbaWrapperShadowImpl <ModuleUriResolverResult, zorba::URIResolverResult> (
+		caster_ruby, new zorba::URIResolverResult (), cModuleUriResolverResult) {
+}
 
-	ModuleUriResolverResult* shadow_real = new ModuleUriResolverResult (self);
-	VALUE shadow = Data_Wrap_Struct (cModuleUriResolverResult, 0, 0/* TODO? */, shadow_real);
+VALUE ModuleUriResolverResult::initialize (VALUE self_ruby) {
 
-	rb_iv_set (self, "@shadow", shadow);
+	ModuleUriResolverResult * self = new ModuleUriResolverResult (self_ruby);
 
-	return self;
+	rb_iv_set (self_ruby, "@shadow", self->shadow ());
+
+	return self_ruby;
+}
+
+std::istream * ModuleUriResolverResult::Delegate::getModuleStream () const {
+
+	VALUE ret = zr_funcall (
+		target->caster (),
+		rb_intern ("module_source"),
+		0);
+
+	auto_ptr<basic_istringstream<char> > in (
+		new basic_istringstream<char> (StringValueCStr (ret)));
+
+	return in.release ();
+}
+
+void ModuleUriResolverResult::Delegate::getModuleURL (string& moduleUrl) const {
+
+	VALUE ret = zr_funcall (
+		target->caster (),
+		rb_intern ("module_url"),
+		0);
+
+	moduleUrl = StringValueCStr (ret);
+}
+
+void ModuleUriResolverResult::Delegate::getComponentURIs (vector<string>& componentUris) const {
+
+	VALUE ret = zr_funcall (
+		target->caster (),
+		rb_intern ("component_uris"),
+		0);
+
+	for (int i = 0; i < RARRAY (ret)->len; i++) {
+		VALUE item = RARRAY (ret)->ptr [i];
+		componentUris.push_back (StringValueCStr (item));
+	}
 }
 
 #endif

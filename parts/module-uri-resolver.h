@@ -84,16 +84,15 @@ auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::Delegate::resolveTa
 		const zorba::String & targetNamespaceURI,
 		const zorba::StaticContext& staticContext) {
 
-	VALUE retRuby_ruby = zr_funcall (
+	VALUE ret_ruby = zr_funcall (
 		target->caster (),
 		rb_intern ("resolve_target_namespace"),
 		1,
 		rb_str_new2 (targetNamespaceURI.c_str ()));
 
-	VALUE retZorba_ruby = rb_iv_get (retRuby_ruby, "@shadow");
-	ZR_REAL (zorba::ModuleURIResolverResult, retZorba);
+	ZR_SHADOW (ModuleUriResolverResult, ret);
 
-	return auto_ptr <zorba::ModuleURIResolverResult> (retZorba);
+	return auto_ptr <zorba::ModuleURIResolverResult> (ret->delegate ());
 }
 
 auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::Delegate::resolve (
@@ -106,10 +105,9 @@ auto_ptr <zorba::ModuleURIResolverResult> ModuleUriResolver::Delegate::resolve (
 		1,
 		rb_str_new2 (uri.c_str ()));
 
-	VALUE retShadow_ruby = rb_iv_get (ret_ruby, "@shadow");
-	ZR_REAL (zorba::ModuleURIResolverResult, retShadow);
+	ZR_SHADOW (ModuleUriResolverResult, ret);
 
-	return auto_ptr <zorba::ModuleURIResolverResult> (retShadow);
+	return auto_ptr <zorba::ModuleURIResolverResult> (ret->delegate ());
 }
 
 #endif
