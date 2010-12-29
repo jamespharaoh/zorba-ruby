@@ -19,31 +19,34 @@
 
 #ifdef INTERFACE_PART
 
-class ItemSequence {
+class ItemSequence :
+	public ZorbaWrapperShadowImpl <ItemSequence, void> {
 
-	zorba::ItemSequence * self_zorba;
+protected:
 
-	VALUE self_ruby;
-
-	~ItemSequence () { }
+	ItemSequence (VALUE self_ruby, VALUE rubyClass);
 
 public:
 
-	ItemSequence (VALUE klass, zorba::ItemSequence *);
+	virtual ~ItemSequence () { }
 
-	zorba::ItemSequence * zorba () { return self_zorba; }
-
-	VALUE ruby () { return self_ruby; }
-
-	static void mark (ItemSequence *);
-	static void del (ItemSequence *);
+	virtual zorba::ItemSequence_t zorba () = 0;
 };
 
-class SingletonItemSequence : public ItemSequence {
+class SingletonItemSequence :
+	public virtual ItemSequence {
+
+	Item * item;
+
+	SingletonItemSequence (VALUE caster_ruby, Item * item_arg);
 
 public:
 
-	static VALUE new_new (VALUE self_ruby, VALUE item_ruby);
+	virtual string toString () { return "SingletonItemSequence"; }
+
+	virtual zorba::ItemSequence_t zorba ();
+
+	static VALUE initialize (VALUE self_ruby, VALUE item_ruby);
 };
 
 #endif
@@ -51,34 +54,35 @@ public:
 
 ZR_CLASS_CLASS (Zorba, SingletonItemSequence, rb_cObject)
 
-ZR_CLASS_SINGLETON_METHOD (SingletonItemSequence, new_new, 1);
+ZR_CLASS_METHOD (SingletonItemSequence, initialize, 1);
 
 #endif
 #ifdef IMPLEMENTATION_PART
 
-ItemSequence::ItemSequence (VALUE klass, zorba::ItemSequence * itemSequence_zorba) {
-
-	self_zorba = itemSequence_zorba;
-
-	self_ruby = Data_Wrap_Struct (klass, mark, del, this);
+ItemSequence::ItemSequence (VALUE caster_ruby, VALUE rubyClass) :
+	ZorbaWrapperShadowImpl <ItemSequence, void> (
+		caster_ruby, (ItemSequence *) this, NULL, rubyClass) {
 }
 
-VALUE SingletonItemSequence::new_new (VALUE self_ruby, VALUE item_ruby) {
+SingletonItemSequence::SingletonItemSequence (VALUE caster_ruby, Item * item_arg) :
+	ItemSequence (caster_ruby, cSingletonItemSequence) {
+
+	item = item_arg;
+}
+
+zorba::ItemSequence_t SingletonItemSequence::zorba () {
+	return zorba::ItemSequence_t (new zorba::SingletonItemSequence (* item->zorba ()));
+}
+
+VALUE SingletonItemSequence::initialize (VALUE self_ruby, VALUE item_ruby) {
 
 	ZR_REAL (Item, item);
 
-	zorba::ItemSequence * itemSequence_zorba = new zorba::SingletonItemSequence (* item->zorba ());
+	ItemSequence * itemSequence = new SingletonItemSequence (self_ruby, item);
 
-	ItemSequence * itemSequence = new ItemSequence (cSingletonItemSequence, itemSequence_zorba);
+	rb_iv_set (self_ruby, "@shadow", itemSequence->shadow ());
 
-	return itemSequence->ruby ();
-}
-
-void ItemSequence::mark (ItemSequence * itemSequence) {
-}
-
-void ItemSequence::del (ItemSequence * itemSequence) {
-	delete itemSequence;
+	return self_ruby;
 }
 
 #endif

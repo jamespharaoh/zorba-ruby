@@ -122,9 +122,9 @@ zorba::ItemSequence_t NonePureStatelessExternalFunction::Delegate::evaluate (
 		staticContext->ruby (),
 		Qnil);
 
-	ZR_REAL (zorba::ItemSequence_t, itemSequence);
+	ItemSequence * itemSequence = ItemSequence::unwrap (itemSequence_ruby);
 
-	return * itemSequence;
+	return itemSequence->zorba ();
 }
 
 #endif
